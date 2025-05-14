@@ -10,6 +10,8 @@ import router from './router'
 
 // 引入所有图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+// 创建并挂载实例 
 const app = createApp(App)
 
 //创建和挂载完，才可use
