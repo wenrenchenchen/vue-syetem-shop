@@ -72,7 +72,7 @@ const onSubmit = () => {
         .finally( () => {
             loading.value = false
         })
-    })
+    }) 
 
 
 }
