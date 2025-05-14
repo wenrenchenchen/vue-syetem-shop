@@ -1,0 +1,18 @@
+import axios from '~/axios'
+
+
+export function login(username,password) {
+    return axios.post("/admin/login" ,{
+        username,
+        password
+    })
+}
+
+
+export function getinfo(){
+    // 在请求拦截器那边已经设置header头自动添加token
+    // return axios.post("/admin/getinfo" ,{
+    //     token
+    // })
+    return axios.post("/admin/getinfo")
+}
