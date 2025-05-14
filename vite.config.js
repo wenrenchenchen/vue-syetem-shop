@@ -12,9 +12,10 @@ import path from "path"
 export default defineConfig({
   resolve:{
     alias:{
-      "~":path.resolve(__dirname,"src") //将波浪线指定到src这个目录，src的别名
+      "~":path.resolve(__dirname,"src") //将波浪线指定到src这个目录，作为src的别名
     }
   },
+  
   // vite自己配置服务器，解决跨域问题
   server:{
      proxy:{
