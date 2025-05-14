@@ -26,7 +26,7 @@ const onSubmit = () => {
         if (!valid) {
             return false
         }
-        loading.value = true
+        loading.value = true  //loading为true 则在请求
         login(form.username, form.password)
         .then(res => {
         // token的位置
@@ -69,7 +69,9 @@ const onSubmit = () => {
         //     duration:3000
         // })
         // })
-
+        .finally( () => {
+            loading.value = false
+        })
     })
 
 
