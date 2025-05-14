@@ -1,5 +1,5 @@
 import axios from "axios"
-import { ElNotification } from 'element-plus'
+import { toast} from '~/composables/util'
 import { getToken } from '~/composables/auth'
 
 
@@ -37,11 +37,8 @@ service.interceptors.response.use(function (response) {
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
 
-    ElNotification({
-        message: error.response.data.msg || "请求失败",
-        type: 'error',
-        duration: 3000
-    })
+    toast(error.response.data.msg || "请求失败","error",3000)
+
 
     return Promise.reject(error);
 });

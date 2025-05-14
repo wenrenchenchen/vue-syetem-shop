@@ -2,7 +2,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { login, getinfo } from '~/api/manager'
-import { ElNotification } from 'element-plus'
+import { toast } from '~/composables/util'
 import { useRouter } from 'vue-router'
 import {
     setToken,
@@ -38,11 +38,12 @@ const onSubmit = () => {
 
 
             //提示成功
-            ElNotification({
-              message: "登录成功",
-              type: 'success',
-              duration: 3000
-            })
+            toast("登录成功","success",3000)
+            // ElNotification({
+            //   message: "登录成功",
+            //   type: 'success',
+            //   duration: 3000
+            // })
 
             //存储token和用户相关信息
             setToken(res.token)
