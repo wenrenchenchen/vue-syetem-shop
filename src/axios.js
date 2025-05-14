@@ -1,6 +1,6 @@
 import axios from "axios"
 import { ElNotification } from 'element-plus'
-import { useCookies } from '@vueuse/integrations/useCookies'
+import { getToken } from '~/composables/auth'
 
 
 const service = axios.create({
@@ -14,9 +14,13 @@ service.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
 
     // 往header头自动添加token
-    const cookie = useCookies()
-    const token = cookie.get("admin-token")
-    config.headers["token"] = token
+    // const cookie = useCookies()
+    // const token = cookie.get("admin-token")
+    const token = getToken()
+    if(token){
+        config.headers["token"] = token
+    }
+
 
     return config;
 }, function (error) {

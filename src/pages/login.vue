@@ -4,7 +4,9 @@ import { ref, reactive } from 'vue'
 import { login, getinfo } from '~/api/manager'
 import { ElNotification } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { useCookies } from '@vueuse/integrations/useCookies'
+import {
+    setToken,
+} from '~/composables/auth'
 
 
 
@@ -43,11 +45,12 @@ const onSubmit = () => {
             })
 
             //存储token和用户相关信息
-            const cookie = useCookies()
+            setToken(res.token)
+            // const cookie = useCookies()
 
-            // cookie.set("admin-token",res.data.data.token)
-            // 设置了响应拦截器
-            cookie.set("admin-token", res.token)
+            // // cookie.set("admin-token",res.data.data.token)
+            // // 设置了响应拦截器
+            // cookie.set("admin-token", res.token)
 
             // 获取用户相关信息
             getinfo().then(res2 => {
