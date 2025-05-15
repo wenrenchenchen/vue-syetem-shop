@@ -4,6 +4,7 @@ import { ref, reactive } from 'vue'
 import { login, getinfo } from '~/api/manager'
 import { toast } from '~/composables/util'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import {
     setToken,
 } from '~/composables/auth'
@@ -18,7 +19,7 @@ const form = reactive({
 })
 
 const router = useRouter()
-
+const store = useStore()
 // 让表单变成响应式
 const formRef = ref(null)
 const loading = ref(false) //防止登录重复请求，每一次点击应都是等上一次请求结束再请求
@@ -35,8 +36,6 @@ const onSubmit = () => {
         // console.log(res.data.data);
         // 设置了响应拦截器
             console.log(res);
-
-
             //提示成功
             toast("登录成功","success",3000)
             // ElNotification({
@@ -55,6 +54,8 @@ const onSubmit = () => {
 
             // 获取用户相关信息
             getinfo().then(res2 => {
+                // 传入用户相关信息
+                store.commit("SET_USERINFO",res2)
                 console.log(res2);
 
         })
