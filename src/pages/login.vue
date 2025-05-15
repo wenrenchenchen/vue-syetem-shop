@@ -1,7 +1,7 @@
 <!-- 登录页面 -->
 <script setup>
 import { ref, reactive } from 'vue'
-import { login, getinfo } from '~/api/manager'
+import { login } from '~/api/manager'
 import { toast } from '~/composables/util'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
@@ -52,13 +52,14 @@ const onSubmit = () => {
             // // 设置了响应拦截器
             // cookie.set("admin-token", res.token)
 
+            //将getinfo封装到了store里
             // 获取用户相关信息
-            getinfo().then(res2 => {
-                // 传入用户相关信息
-                store.commit("SET_USERINFO",res2)
-                console.log(res2);
+        //     getinfo().then(res2 => {
+        //         // 传入用户相关信息
+        //         store.commit("SET_USERINFO",res2)
+        //         console.log(res2);
 
-        })
+        // })
 
 
             //跳转到后台首页
