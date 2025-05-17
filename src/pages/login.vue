@@ -30,41 +30,50 @@ const onSubmit = () => {
             return false
         }
         loading.value = true  //loading为true 则在请求
-        login(form.username, form.password)
-        .then(res => {
-        // token的位置
-        // console.log(res.data.data);
-        // 设置了响应拦截器
-            console.log(res);
+        // 将登录方法封装到vuex中
+        store.dispatch("login",form).then(res=>{
             //提示成功
-            toast("登录成功","success",3000)
-            // ElNotification({
-            //   message: "登录成功",
-            //   type: 'success',
-            //   duration: 3000
-            // })
-
-            //存储token和用户相关信息
-            setToken(res.token)
-            // const cookie = useCookies()
-
-            // // cookie.set("admin-token",res.data.data.token)
-            // // 设置了响应拦截器
-            // cookie.set("admin-token", res.token)
-
-            //将getinfo封装到了store里
-            // 获取用户相关信息
-        //     getinfo().then(res2 => {
-        //         // 传入用户相关信息
-        //         store.commit("SET_USERINFO",res2)
-        //         console.log(res2);
-
-        // })
-
-
+            toast("登录成功")
             //跳转到后台首页
             router.push('/')
+        }).finally( () => {
+            loading.value = false
         })
+        // login(form.username, form.password)
+        // .then(res => {
+        // // token的位置
+        // // console.log(res.data.data);
+        // // 设置了响应拦截器
+        //     console.log(res);
+        //     //提示成功
+        //     toast("登录成功","success",3000)
+        //     // ElNotification({
+        //     //   message: "登录成功",
+        //     //   type: 'success',
+        //     //   duration: 3000
+        //     // })
+
+        //     //存储token和用户相关信息
+        //     setToken(res.token)
+        //     // const cookie = useCookies()
+
+        //     // // cookie.set("admin-token",res.data.data.token)
+        //     // // 设置了响应拦截器
+        //     // cookie.set("admin-token", res.token)
+
+        //     //将getinfo封装到了store里
+        //     // 获取用户相关信息
+        // //     getinfo().then(res2 => {
+        // //         // 传入用户相关信息
+        // //         store.commit("SET_USERINFO",res2)
+        // //         console.log(res2);
+
+        // // })
+
+
+        //     //跳转到后台首页
+        //     router.push('/')
+        // })
         // 用catch捕获错误信息
         // .catch(err => {
         // console.log(err.response.data.msg);
@@ -75,9 +84,7 @@ const onSubmit = () => {
         //     duration:3000
         // })
         // })
-        .finally( () => {
-            loading.value = false
-        })
+        
     }) 
 
 
