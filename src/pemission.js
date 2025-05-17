@@ -34,6 +34,11 @@ router.beforeEach( async (to,from,next) => {
         await store.dispatch("getinfo")
     }
 
+    //设置页面标题
+    
+    let title = (to.meta.title ? to.meta.title : "") + "_ldg-fristsystem"
+    // 将title传给页面的title
+    document.title = title;
     next()
 
 })
