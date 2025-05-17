@@ -16,3 +16,7 @@ export function getinfo(){
     // })
     return axios.post("/admin/getinfo")
 }
+// 退出登录的接口
+export function logout(){
+    return axios.post("/admin/logout")
+}
