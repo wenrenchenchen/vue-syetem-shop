@@ -1,6 +1,6 @@
 <!-- 登录页面 -->
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive,onMounted,onBeforeUnmount } from 'vue'
 import { login } from '~/api/manager'
 import { toast } from '~/composables/util'
 import { useRouter } from 'vue-router'
@@ -110,6 +110,26 @@ const rules = {
 
     ],
 }
+
+//监听回车事件
+function onKeyup(e) {
+    if(e.key == "Enter"){
+        onSubmit();
+    }
+    
+}
+
+//添加键盘监听
+// 页面加载之前
+onMounted(() => {
+    document.addEventListener("keyup",onKeyup)
+})
+// 页面卸载之前
+onBeforeUnmount(()=>{
+    document.removeEventListener("keyup",onkeyup)
+})
+
+
 
 </script>
 
