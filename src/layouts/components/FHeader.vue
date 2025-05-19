@@ -5,6 +5,16 @@
     import { useRouter } from 'vue-router'
 
     import { useStore } from 'vuex'
+    import { useFullscreen } from '@vueuse/core'
+
+    // 引入vueuse的方法，实现全屏显示
+    const {
+        // 是否全屏
+        isFullscreen,
+        // 切换全屏  
+        toggle 
+        } = useFullscreen()
+
     const router = useRouter()
     const store = useStore()
 
@@ -62,10 +72,13 @@
         <div class="header-right">
             <el-tooltip  
                 effect="dark"
-                content="全屏显示"
+                content="全屏"
                 placement="bottom"
             >
-                <el-icon class="icon-btn" ><FullScreen /></el-icon>
+                <el-icon class="icon-btn" @click="toggle">
+                    <FullScreen v-if="!isFullscreen" />
+                    <Aim v-else/>
+                </el-icon>
             </el-tooltip>
 
             <!-- 下拉菜单 -->
