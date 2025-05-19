@@ -1,12 +1,26 @@
 <script setup>
-import { showModal } from '~/composables/util'
-import { logout } from '~/api/manager'
-import { toast } from '~/composables/util'
-import { useRouter } from 'vue-router'
+    import { showModal } from '~/composables/util'
+    import { logout } from '~/api/manager'
+    import { toast } from '~/composables/util'
+    import { useRouter } from 'vue-router'
 
-import { useStore } from 'vuex'
-const router = useRouter()
-const store = useStore()
+    import { useStore } from 'vuex'
+    const router = useRouter()
+    const store = useStore()
+
+    // 对下拉菜单监听
+    const handleCommand = (c)=>{
+        switch (c){
+            case "logout":
+                handleLogout();
+                break;
+            case "rePassword":
+                console.log("修改密码")     
+                break;
+        }
+        
+    }
+
     function handleLogout(){
         showModal("是否要退出登录?")
         .then(res=>{
@@ -38,7 +52,7 @@ const store = useStore()
         <div class="header-right">
             <el-icon class="icon-btn"><FullScreen /></el-icon>
             <!-- 下拉菜单 -->
-            <el-dropdown class="dropdown">
+            <el-dropdown class="dropdown" @command="handleCommand">
                 <span class="dropdown-link">
                     <el-avatar class="avatar" :size="25" :src="$store.state.user.avatar" />
                     {{ $store.state.user.username }}
@@ -48,8 +62,8 @@ const store = useStore()
                 </span>
                 <template #dropdown>
                 <el-dropdown-menu>
-                    <el-dropdown-item>修改密码</el-dropdown-item>
-                    <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
+                    <el-dropdown-item command="rePassword">修改密码</el-dropdown-item>
+                    <el-dropdown-item command="logout">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
                 </template>
             </el-dropdown>
