@@ -39,6 +39,7 @@
         })
 
     }
+    const handleRefresh = ()=>location.reload()
 </script>
 <template>
     <div class="f-header">
@@ -48,9 +49,25 @@
             AHC
         </span>
         <el-icon class="icon-btn"><fold /></el-icon>
-        <el-icon class="icon-btn"><refresh /></el-icon>
+        <!-- 文字提示 -->
+        <el-tooltip  
+            effect="dark"
+            content="刷新"
+            placement="bottom"
+        >
+            <el-icon class="icon-btn" @click="handleRefresh"><refresh /></el-icon>
+        </el-tooltip>
+
+       
         <div class="header-right">
-            <el-icon class="icon-btn"><FullScreen /></el-icon>
+            <el-tooltip  
+                effect="dark"
+                content="全屏显示"
+                placement="bottom"
+            >
+                <el-icon class="icon-btn" ><FullScreen /></el-icon>
+            </el-tooltip>
+
             <!-- 下拉菜单 -->
             <el-dropdown class="dropdown" @command="handleCommand">
                 <span class="dropdown-link">
