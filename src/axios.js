@@ -1,7 +1,7 @@
 import axios from "axios"
 import { toast} from '~/composables/util'
 import { getToken } from '~/composables/auth'
-
+import store from "./store"
 
 const service = axios.create({
     // baseURL:"http://ceshi13.dishait.cn" //域名or根目录or相同的那部分
@@ -37,9 +37,15 @@ service.interceptors.response.use(function (response) {
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
 
-    toast(error.response.data.msg || "请求失败","error",3000)
+    const msg = error.response.data.msg || "请求失败"
+    
+    // 防止已经退出登录，还强制操作
+    if(msg == "非法token，请先登录！"){
+        store.dispatch("logout").finally(()=>location.reload())
+    }
 
 
+    toast(msg,"error")
     return Promise.reject(error);
 });
 
