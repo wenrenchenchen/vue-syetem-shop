@@ -8,6 +8,7 @@
     import { useFullscreen } from '@vueuse/core'
     import { updatepassword } from '../../api/manager'
 
+    import FormDrawer from '~/components/FormDrawer.vue'
     // 引入vueuse的方法，实现全屏显示
     const {
         // 是否全屏
@@ -21,7 +22,8 @@
     
     
     // 修改密码
-    const showDrawer = ref(false)
+    const formDrawerRef = ref(null)
+    // const showDrawer = ref(false)
     const form = reactive({
         oldpassword:'',
         password:'',
@@ -56,14 +58,15 @@
     }
     // 让表单变成响应式
     const formRef = ref(null)
-    const loading = ref(false) //防止登录重复请求，每一次点击应都是等上一次请求结束再请求
+    // const loading = ref(false) //防止登录重复请求，每一次点击应都是等上一次请求结束再请求
     const onSubmit = () => {
         // 调用 validate 方法验证表单
         formRef.value.validate((valid) => {
             if (!valid) {
                 return false
             }
-            loading.value = true  //loading为true 则在请求
+            // loading.value = true  //loading为true 则在请求
+            formDrawerRef.value.showLoding()
             updatepassword(form)
             .then(res=>{
                 toast("修改密码成功，请重新登录")
@@ -73,7 +76,8 @@
                 router.push('/login')
             })
             .finally(()=>{
-                loading.value = false
+                // loading.value = false
+                formDrawerRef.value.hideLoding()
             })
         })
 
@@ -89,7 +93,8 @@
                 handleLogout();
                 break;
             case "rePassword":
-                showDrawer.value = true;    
+                // showDrawer.value = true;    
+                formDrawerRef.value.open()
                 break;
         }
         
@@ -166,7 +171,7 @@
         </div>
     </div>
     <!-- 修改密码的抽屉 -->
-    <el-drawer v-model="showDrawer" title="修改密码" size="45%" close-on-click-modal="false">
+    <!-- <el-drawer v-model="showDrawer" title="修改密码" size="45%" close-on-click-modal="false">
         <el-form ref="formRef" :rules="rules" :model="form" size="small">
 
                 <el-form-item prop="oldpassword" label="旧密码">
@@ -183,13 +188,27 @@
                     </el-input>
                 </el-form-item>
 
-                <el-form-item>
-                    <el-button  class="button-1" type="primary" @click="onSubmit" :loading="loading">提交</el-button>
+            </el-form>
+    </el-drawer> -->
+    <form-drawer ref="formDrawerRef" title="修改密码" destroyOnClose @submit="onSubmit">
+                <el-form ref="formRef" :rules="rules" :model="form" size="small">
+
+                <el-form-item prop="oldpassword" label="旧密码">
+                    <el-input v-model="form.oldpassword" placeholder="请输入旧密码">
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item prop="password" label="新密码">
+                    <el-input v-model="form.password" placeholder="请输入新密码" type="password" show-password>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="repassword" label="确认密码">
+                    <el-input v-model="form.repassword" placeholder="请再次输入新密码" type="password" show-password>
+                    </el-input>
                 </el-form-item>
 
             </el-form>
-    </el-drawer>
-
+    </form-drawer>
 
 
 
