@@ -11,7 +11,11 @@ const store = createStore({
       //用户信息
       user:{},
       //侧边宽度
-      asideWidth:"250px"
+      asideWidth:"250px",
+      
+      menus:[], //渲染后端数据，第一步return
+
+      ruleNmaes:[],
     }
   },
   mutations: {
@@ -22,7 +26,13 @@ const store = createStore({
     //展开收起 侧边
     handleAsideWidth(state){
       state.asideWidth = state.asideWidth == "250px" ? "64px" : "250px"
-    }
+    },
+    SET_MENUS(state,menus){//渲染后端数据，第二步设置传参
+      state.menus = menus
+    },
+    SET_RULENAMES(state,ruleNmaes){
+      state.ruleNmaes = ruleNmaes
+    },
   },
   actions: {
 
@@ -32,6 +42,8 @@ const store = createStore({
         return new Promise((resolve,reject) => {
             getinfo().then(res => {
                 commit("SET_USERINFO",res)
+                commit("SET_MENUS",res.menus)//渲染后端数据，第三步渲染 第四步去menu页面 将数据绑定
+                commit("SET_RULENAMES",res.ruleNmaes)
                 resolve(res)
             }).catch(err=>{
                 reject(err)
