@@ -51,8 +51,9 @@ const handleRefresh = () => location.reload()
             </el-icon>
             AHC
         </span>
-        <el-icon class="icon-btn">
-            <fold />
+        <el-icon class="icon-btn" @click="$store.commit('handleAsideWidth')">
+            <fold v-if="$store.state.asideWidth == '250px'" />
+            <Expand v-else />
         </el-icon>
         <!-- 文字提示 -->
         <el-tooltip effect="dark" content="刷新" placement="bottom">
