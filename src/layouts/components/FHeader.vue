@@ -136,7 +136,8 @@ const handleRefresh = () => location.reload()
 <style>
 .f-header {
     display: flex;
-    background-color: rgb(184, 80, 215);
+    /* background-color: rgb(184, 80, 215); */
+    background-color: rgb(68, 215, 188);
     color: hsl(214, 100%, 99%);
     height: 64px;
     position: fixed;
@@ -176,7 +177,8 @@ const handleRefresh = () => location.reload()
 }
 
 .icon-btn:hover {
-    background-color: rgb(202, 136, 217);
+    background-color: rgb(133, 215, 200);
+    /* background-color: rgb(202, 136, 217); */
 }
 
 .f-header .dropdown {
