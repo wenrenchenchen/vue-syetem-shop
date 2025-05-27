@@ -9,25 +9,28 @@ import FTagList from './components/FTagList.vue';
     <el-container>
         <!-- 上 -->
         <el-header>
-            <f-header/>
+            <f-header />
         </el-header>
 
         <!-- 下 -->
         <el-container>
             <el-aside :width="$store.state.asideWidth">
-                <f-menu/>
+                <f-menu />
             </el-aside>
             <el-main>
                 <!-- 标签导航 -->
-                <f-tag-list/>
+                <f-tag-list />
                 <!-- 内容 -->
-                <router-view v-slot="{ Component}">
+                <router-view v-slot="{ Component }">
                     <!-- <keep-alive :max="10">
                         <component :is="Component"></component>
                     </keep-alive> -->
-                    <KeepAlive :max="10">
-                        <component :is="Component"></component>
-                    </KeepAlive>
+                    <transition name="fade">
+                        <KeepAlive :max="10">
+                            <component :is="Component"></component>
+                        </KeepAlive>
+                    </transition>
+
                 </router-view>
             </el-main>
         </el-container>
@@ -36,5 +39,35 @@ import FTagList from './components/FTagList.vue';
 <style>
 .el-aside {
     transition: all 0.2s;
+}
+
+/* 进入之前的过渡动画 */
+.fade-enter-from {
+    opacity: 0;
+}
+
+/* 进入之后 */
+.fade-enter-to {
+    opacity: 1;
+}
+
+/* 离开之前 */
+.fade-leave-from {
+    opacity: 1;
+}
+
+/* 离开之后 */
+.fade-leave-to {
+    opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: all 0.3s;
+}
+
+/* 进入的时候延迟一下 */
+.fade-enter-active {
+    transition-delay: 0.3s;
 }
 </style>
