@@ -6,7 +6,7 @@ import 'element-plus/dist/index.css'
 
 // import './style.css'
 import App from './App.vue'
-import router from './router'
+import {router} from './router'
 
 // 引入所有图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
