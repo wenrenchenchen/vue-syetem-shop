@@ -48,7 +48,7 @@ export function useTabList() {
 
     const changeTab = (t) => {
         activeTab.value = t
-        route.push(t)
+        router.push(t)
     }
 
     const removeTab = (t) => {
