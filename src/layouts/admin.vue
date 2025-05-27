@@ -20,7 +20,14 @@ import FTagList from './components/FTagList.vue';
                 <!-- 标签导航 -->
                 <f-tag-list/>
                 <!-- 内容 -->
-                <router-view></router-view>
+                <router-view v-slot="{ Component}">
+                    <!-- <keep-alive :max="10">
+                        <component :is="Component"></component>
+                    </keep-alive> -->
+                    <keep-alive :max="10">
+                        <component :is="Component"></component>
+                    </keep-alive>
+                </router-view>
             </el-main>
         </el-container>
     </el-container>
