@@ -1,4 +1,5 @@
 <script setup>
+import { KeepAlive } from 'vue';
 import FHeader from './components/FHeader.vue';
 import FMenu from './components/FMenu.vue';
 import FTagList from './components/FTagList.vue';
@@ -24,9 +25,9 @@ import FTagList from './components/FTagList.vue';
                     <!-- <keep-alive :max="10">
                         <component :is="Component"></component>
                     </keep-alive> -->
-                    <keep-alive :max="10">
+                    <KeepAlive :max="10">
                         <component :is="Component"></component>
-                    </keep-alive>
+                    </KeepAlive>
                 </router-view>
             </el-main>
         </el-container>
