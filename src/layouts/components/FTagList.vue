@@ -11,12 +11,13 @@ const {
 </script>
 
 <template>
-    <div class="f-tag-list" :style="{ left: $store.state.asidWidth }">
+    <div class="f-tag-list" :style="{ left:$store.state.asideWidth }">
         <!-- 标签 -->
-        <el-tabs v-model="activeTab" type="card" class="demo-tabs" 
+        <el-tabs v-model="activeTab" type="card" class="flex-1" 
         @tab-remove="removeTab"  style="min-width: 100px;" 
         @tab-change="changeTab">
-            <el-tab-pane :closable="item.path != '/' ? true : false" v-for="item in tabList" :key="item.path" :label="item.title" :name="item.path">
+            <el-tab-pane :closable="item.path != '/' ? true : false" v-for="item in tabList" :key="item.path" :label="item.title" 
+            :name="item.path">
             </el-tab-pane>
         </el-tabs>
 
@@ -40,16 +41,16 @@ const {
     <div style="height: 44px; "></div>
 </template>
 <style>
-.el-icon--right {
+/* .el-icon--right {
     margin-left: 0;
 }
 
 .el-main {
     padding: 0;
-}
+} */
 
 .f-tag-list {
-    @apply bg-gray-100 flex items-center justify-center px-2;
+    @apply fixed bg-gray-100 flex items-center  px-2;
     top: 64px;
     right: 0;
     height: 44px;
@@ -58,13 +59,13 @@ const {
 }
 
 .tag-btn {
-    @apply bg-white rounded ml-auto flex items-center justify-center;
+    @apply bg-white rounded ml-auto flex items-center justify-center px-2;
     height: 32px;
     width: 32px;
 }
 
 .el-tabs__header {
-    margin: 0;
+    margin-bottom: 0;
 
 }
 
