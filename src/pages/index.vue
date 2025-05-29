@@ -4,7 +4,7 @@ import {
     getStatistics1
 } from "~/api/index.js"
 import CountTo from "~/components/CountTo.vue"
-import IndexNavs from "~/components/IndexNavs.vue"
+
 
 const panels = ref([])
 getStatistics1()
@@ -20,7 +20,6 @@ getStatistics1()
 <template>
     
     <div>
-        <!-- 1统计面板 -->
         <el-row :gutter="20">
             <template v-if="panels.length == 0">
                 <el-col :span="6" v-for="i in 4" :key="i">
@@ -66,10 +65,6 @@ getStatistics1()
                 </el-card>
             </el-col>
         </el-row>
-
-        <!-- 2分类面板 -->
-        <IndexNavs></IndexNavs>
-
     </div>
 </template>
 
