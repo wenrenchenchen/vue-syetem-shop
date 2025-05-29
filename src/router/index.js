@@ -9,7 +9,13 @@ import Login from '~/pages/login.vue';
 import NotFound from '~/pages/404.vue';
 import GoodList from '~/pages/goods/list.vue';
 import CategoryList from '~/pages/category/list.vue';
-
+import  UserList from '~/pages/user/list.vue';
+import  OrderList from '~/pages/order/list.vue';
+import  CommentList from '~/pages/comment/list.vue';
+import  ImageList from '~/pages/image/list.vue';
+import  NoticeList from '~/pages/notice/list.vue';
+import  SeetingList from '~/pages/setting/base.vue';
+import  CouponList from '~/pages/coupon/list.vue';
 
 
 //  路由配置
