@@ -107,7 +107,70 @@ const asyncRoutes = [
         meta: {
             title: "分类列表"
         }
-    }
+    },
+        {
+
+        path: "/user/list",
+        name:"/user/list",
+        component: UserList,
+        meta: {
+            title: "用户"
+        }
+    },
+    {
+
+        path: "/order/list",
+        name:"/order/list",
+        component: OrderList,
+        meta: {
+            title: "订单"
+        }
+    },
+    {
+
+        path: "/comment/list",
+        name:"/comment/list",
+        component: CommentList,
+        meta: {
+            title: "评价"
+        }
+    },
+    {
+
+        path: "/image/list",
+        name:"/image/list",
+        component: ImageList,
+        meta: {
+            title: "图库"
+        }
+    },
+    {
+
+        path: "/notice/list",
+        name:"/notice/list",
+        component: NoticeList,
+        meta: {
+            title: "公告"
+        }
+    },
+    {
+
+        path: "/setting/base",
+        name:"/setting/base",
+        component: SeetingList,
+        meta: {
+            title: "配置"
+        }
+    },
+    {
+
+        path: "/coupon/list",
+        name:"/coupon/list",
+        component: CouponList,
+        meta: {
+            title: "优惠券"
+        }
+    },
 ]
 
 
