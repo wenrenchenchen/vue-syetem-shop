@@ -1,21 +1,30 @@
 <script setup>
 import { ref } from "vue"
 import {
-    getStatistics1
+    getStatistics1,
+    getStatistics2
 } from "~/api/index.js"
 import CountTo from "~/components/CountTo.vue"
 import IndexNavs from "~/components/IndexNavs.vue"
-import IndexChart from "../components/IndexChart.vue"
+import IndexChart from "~/components/IndexChart.vue"
+import IndexCard from "~/components/IndexCard.vue"
+
 
 const panels = ref([])
 getStatistics1()
     .then(res => {
         panels.value = res.panels
-        console.log(panels.value);
+        // console.log(panels.value);
 
     })
 
+const goods = ref([])
+const order = ref([])
 
+getStatistics2().then(res=>{
+    goods.value = res.goods
+    order.value = res.order
+})
 </script>
 
 <template>
@@ -72,13 +81,16 @@ getStatistics1()
         <IndexNavs></IndexNavs>
 
         <!-- 3 左右布局 -->
-        <el-row :gutter="20">
+        <el-row :gutter="20" class=" mt-5">
         <!-- 左 echart图表 -->
             <el-col :span="12" :offset="0">
                 <IndexChart />
             </el-col>
             <!-- 右 -->
-            <el-col :span="12" :offset="0"></el-col>
+            <el-col :span="12" :offset="0">
+                <IndexCard title="店铺及商品提示" tip="店铺及商品提示" :btns="goods" />
+                <IndexCard title="交易提示" tip="需要立即处理的交易订单" :btns="order" class="mt-3"/>
+            </el-col>
         </el-row>
         
 
