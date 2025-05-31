@@ -1,6 +1,7 @@
 <script setup>
 import { ref,onMounted,onBeforeUnmount  } from 'vue' 
 import * as echarts from 'echarts';
+import { useResizeObserver } from '@vueuse/core'
 import {
     getStatistics3
 } from '~/api/index.js'
@@ -30,6 +31,7 @@ onMounted(()=>{
     myChart = echarts.init(chartDom);
     getData()
 })
+
 
 onBeforeUnmount(()=>{
     if(myChart) echarts.dispose(myChart)
@@ -65,6 +67,12 @@ function getData(){
     })
 }
 
+const el = ref(null)
+
+useResizeObserver(el, (entries) => {
+  myChart.resize()
+})
+
 </script>
 
 <template>
@@ -82,7 +90,7 @@ function getData(){
         </div>
         </template>
         <!-- 图表 -->
-        <div id="chart" style="width: 100%; height: 300px;"></div>
+        <div ref="el" id="chart" style="width: 100%; height: 300px;"></div>
 
     </el-card>
 
