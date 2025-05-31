@@ -18,8 +18,8 @@
     }
     /* 滚动条 */
     ::-webkit-scrollbar{
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 4px;
     }
 
     ::-webkit-scrollbar-corner{
