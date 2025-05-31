@@ -32,16 +32,16 @@
     const submit = ()=> emit("submit")
 
     const loading = ref(false) //防止登录重复请求，每一次点击应都是等上一次请求结束再请求
-    const showLoding = ()=> loading.value = true
-    const hideLoding = ()=> loading.value = false
+    const showLoading = ()=> loading.value = true
+    const hideLoading = ()=> loading.value = false
 
 
     //向父组件暴露以下方法
     defineExpose({
         open,
         close,
-        showLoding,
-        hideLoding
+        showLoading,
+        hideLoading
     })
 
 </script>

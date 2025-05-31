@@ -52,7 +52,7 @@ export function useRepassword() {
                 return false
             }
             // loading.value = true  //loading为true 则在请求
-            formDrawerRef.value.showLoding()
+            formDrawerRef.value.showLoading()
             updatepassword(form)
                 .then(res => {
                     toast("修改密码成功，请重新登录")
@@ -63,7 +63,7 @@ export function useRepassword() {
                 })
                 .finally(() => {
                     // loading.value = false
-                    formDrawerRef.value.hideLoding()
+                    formDrawerRef.value.hideLoading()
                 })
         })
 
