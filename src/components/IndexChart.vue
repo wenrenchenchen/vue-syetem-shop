@@ -1,5 +1,5 @@
 <script setup>
-import { ref,onMounted  } from 'vue' 
+import { ref,onMounted,onBeforeUnmount  } from 'vue' 
 import * as echarts from 'echarts';
 import {
     getStatistics3
@@ -29,6 +29,10 @@ onMounted(()=>{
     var chartDom = document.getElementById('chart');
     myChart = echarts.init(chartDom);
     getData()
+})
+
+onBeforeUnmount(()=>{
+    if(myChart) echarts.dispose(myChart)
 })
 
 function getData(){
