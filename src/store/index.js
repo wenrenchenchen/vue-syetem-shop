@@ -15,7 +15,7 @@ const store = createStore({
       
       menus:[], //渲染后端数据，第一步return
 
-      ruleNmaes:[],
+      ruleNames:[],
     }
   },
   mutations: {
@@ -30,8 +30,8 @@ const store = createStore({
     SET_MENUS(state,menus){//渲染后端数据，第二步设置传参
       state.menus = menus
     },
-    SET_RULENAMES(state,ruleNmaes){
-      state.ruleNmaes = ruleNmaes
+    SET_RULENAMES(state,ruleNames){
+      state.ruleNames = ruleNames
     },
   },
   actions: {
@@ -43,7 +43,7 @@ const store = createStore({
             getinfo().then(res => {
                 commit("SET_USERINFO",res)
                 commit("SET_MENUS",res.menus)//渲染后端数据，第三步渲染 第四步去menu页面 将数据绑定
-                commit("SET_RULENAMES",res.ruleNmaes)
+                commit("SET_RULENAMES",res.ruleNames)
                 resolve(res)
             }).catch(err=>{
                 reject(err)
