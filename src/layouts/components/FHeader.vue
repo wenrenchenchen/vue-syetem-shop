@@ -146,6 +146,7 @@ const handleRefresh = () => location.reload()
     left: 0;
     right: 0;
     align-items: center;
+    z-index: 1000;
 }
 
 .header-right {

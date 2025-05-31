@@ -5,6 +5,7 @@ import {
 } from "~/api/index.js"
 import CountTo from "~/components/CountTo.vue"
 import IndexNavs from "~/components/IndexNavs.vue"
+import IndexChart from "../components/IndexChart.vue"
 
 const panels = ref([])
 getStatistics1()
@@ -69,6 +70,18 @@ getStatistics1()
 
         <!-- 2分类面板 -->
         <IndexNavs></IndexNavs>
+
+        <!-- 3 左右布局 -->
+        <el-row :gutter="20">
+        <!-- 左 echart图表 -->
+            <el-col :span="12" :offset="0">
+                <IndexChart />
+            </el-col>
+            <!-- 右 -->
+            <el-col :span="12" :offset="0"></el-col>
+        </el-row>
+        
+
 
     </div>
 </template>
