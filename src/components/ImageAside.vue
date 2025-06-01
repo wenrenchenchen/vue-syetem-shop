@@ -1,10 +1,10 @@
 <script setup>
 import AsideList from './AsideList.vue';
 import FormDrawer from './FormDrawer.vue'
-import { getImageClassList,createImageClass } from '~/api/image_class';
-import { ref,reactive } from 'vue';
+import { getImageClassList,createImageClass,updateImageClass } from '~/api/image_class';
+import { ref,reactive, } from 'vue';
 import { toast } from "~/composables/util.js"
-
+import { computed } from "@vue/reactivity";
 //加载动画
 const loading = ref(false)
 const list = ref([])
@@ -25,8 +25,6 @@ function getData(p = null){
     loading.value = true
     getImageClassList(currentPage.value)
     .then(res=>{
-        
-        
         total.value = res.totalCount
         list.value = res.list
         let item = list.value[0]
@@ -41,10 +39,9 @@ function getData(p = null){
 }
 getData()
 
+const editId = ref(0)
+const drawerTitle = computed(()=>editId.value ? "修改" : "新增")
 const formDrawerRef = ref(null)
-const handleCreate = ()=> formDrawerRef.value.open()
-
-
 const form = reactive({
     name:"",
     order:50
@@ -66,13 +63,16 @@ const handleSubmit = ()=>{
         if(!valid) return    
 
         formDrawerRef.value.showLoading()
-        createImageClass(form)
+
+
+        const fun = editId.value ? updateImageClass(editId.value,form) : createImageClass(form)
+
         // 新增成功后的步骤
-        .then(res=>{
+        fun.then(res=>{
             // 提示
-            toast("新增成功")
-            // 重新加载第一页数据
-            getData(1)
+            toast(drawerTitle.value + "成功")
+            // 重新加载第一页数据and 当前页（修改时）
+            getData(editId.value ? currentPage.value : 1)
             // 关闭弹窗
             formDrawerRef.value.close()
         })
@@ -83,6 +83,23 @@ const handleSubmit = ()=>{
     
 }
 
+//新增
+const handleCreate = ()=> {
+    editId.value = 0
+    form.name = ""
+    form.order = 50
+    formDrawerRef.value.open()
+}
+//编辑
+const handleEdit = (row)=>{
+    editId.value = row.id
+    form.name = row.name
+    form.order = row.order
+    formDrawerRef.value.open()
+    
+}
+
+
 defineExpose({
     handleCreate
 })
@@ -92,7 +109,8 @@ defineExpose({
     <el-aside width="220px" class="image-aside" v-loading="loading">
         <!-- 上 ：内容标题 -->
         <div class="top">
-            <AsideList :active="activeId == item.id" v-for="(item,index) in list" :key="index">
+            <AsideList :active="activeId == item.id" v-for="(item,index) in list" 
+            :key="index" @edit="handleEdit(item)">
                 {{item.name}}
             </AsideList>
 
@@ -103,13 +121,13 @@ defineExpose({
             :current-page="currentPage" :page-size="limit" @current-change="getData" />
         </div>
     </el-aside>
-    <FormDrawer title="新增" ref="formDrawerRef" @submit="handleSubmit">
+    <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handleSubmit">
         <el-form :model="form" ref="formRef" :rules="rules" 
         label-width="80px" :inline="false" >
             <el-form-item label="分类名称" prop="name">
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <el-form-item label="排序" prop="name">
+            <el-form-item label="排序" prop="or">
                  <el-input-number v-model="form.order" :min="0" :max="1000" />
             </el-form-item>
         </el-form>
