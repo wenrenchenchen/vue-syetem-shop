@@ -16,11 +16,15 @@ defineEmits(["edit","delete"])
                 <Edit />
             </el-icon>
         </el-button>
-        <el-button class="px-1" text type="primary" size="small"  @click="$emit('delete')">
-            <el-icon :size="12">
-                <Close />
-            </el-icon>
-        </el-button>
+         <el-popconfirm title="是否要删除" confirm-button-text="确认" cancel-button-text="取消" @confirm="$emit('delete')">
+            <template #reference>
+                <el-button class="px-1" text type="primary" size="small"  >
+                    <el-icon :size="12">
+                        <Close />
+                    </el-icon>
+                </el-button>
+            </template>        
+        </el-popconfirm>   
     </div>
 </template>
 <style>

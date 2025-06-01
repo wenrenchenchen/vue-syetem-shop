@@ -5,6 +5,8 @@ import { getImageClassList,createImageClass,updateImageClass } from '~/api/image
 import { ref,reactive, } from 'vue';
 import { toast } from "~/composables/util.js"
 import { computed } from "@vue/reactivity";
+import { deleteImageClass } from '../api/image_class';
+
 //加载动画
 const loading = ref(false)
 const list = ref([])
@@ -98,6 +100,19 @@ const handleEdit = (row)=>{
     formDrawerRef.value.open()
     
 }
+//删除
+const handleDelete = (id)=>{
+    loading.value = true
+    deleteImageClass(id)
+    .then(res=>{    
+        toast("删除成功")
+        getData()
+    })
+    .finally(()=>{
+        loading.value = false
+    })
+    
+}
 
 
 defineExpose({
@@ -110,7 +125,7 @@ defineExpose({
         <!-- 上 ：内容标题 -->
         <div class="top">
             <AsideList :active="activeId == item.id" v-for="(item,index) in list" 
-            :key="index" @edit="handleEdit(item)">
+            :key="index" @edit="handleEdit(item)" @delete="handleDelete(item.id)">
                 {{item.name}}
             </AsideList>
 
