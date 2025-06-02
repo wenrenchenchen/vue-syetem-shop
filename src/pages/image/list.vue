@@ -11,6 +11,10 @@ const h = windowHeight - 64 - 44 - 40
 const ImageAsideRef = ref(null)
 
 const handleOpenCreate = ()=> ImageAsideRef.value.handleCreate()
+
+const ImageMainRef = ref(null)
+const handleAsideChange = (image_class_id)=> ImageMainRef.value.loadData(image_class_id)
+
 </script>
 
 <template>
@@ -22,9 +26,9 @@ const handleOpenCreate = ()=> ImageAsideRef.value.handleCreate()
         </el-header>
         <el-container>
             <!-- B侧边 -->
-            <ImageAside ref="ImageAsideRef" />
+            <ImageAside ref="ImageAsideRef" @change="handleAsideChange" />
             <!-- C内容 -->
-            <ImageMain />
+            <ImageMain ref="ImageMainRef" />
         </el-container>
     </el-container>
 

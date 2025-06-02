@@ -10,7 +10,7 @@ import { deleteImageClass } from '../api/image_class';
 //加载动画
 const loading = ref(false)
 const list = ref([])
-const activeId = ref(0)
+
 
 //分页
 
@@ -31,7 +31,8 @@ function getData(p = null){
         list.value = res.list
         let item = list.value[0]
         if(item){
-            activeId.value = item.id
+            // activeId.value = item.id
+            handleChangeActiveId(item.id)
         }
         
     })
@@ -114,6 +115,14 @@ const handleDelete = (id)=>{
     
 }
 
+//选中图库分类id
+const activeId = ref(0)
+const emit = defineEmits(["change"])
+//切换分类
+function handleChangeActiveId(id){
+    activeId.value = id
+    emit("change",id)
+}
 
 defineExpose({
     handleCreate
@@ -125,7 +134,7 @@ defineExpose({
         <!-- 上 ：内容标题 -->
         <div class="top">
             <AsideList :active="activeId == item.id" v-for="(item,index) in list" 
-            :key="index" @edit="handleEdit(item)" @delete="handleDelete(item.id)">
+            :key="index" @edit="handleEdit(item)" @delete="handleDelete(item.id)" @click="handleChangeActiveId(item.id)">
                 {{item.name}}
             </AsideList>
 
