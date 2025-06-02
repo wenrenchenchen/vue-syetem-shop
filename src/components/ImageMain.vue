@@ -1,7 +1,14 @@
 <script setup>
-import { getImageList } from '~/api/image';
-import { ref } from 'vue';
+import { 
+    getImageList,
+    updateImage 
 
+} from '~/api/image';
+import { ref } from 'vue';
+import { 
+    showPrompt,
+    toast 
+} from '~/composables/util.js';
 
 //分页
 const currentPage = ref(1) //默认是第一页
@@ -34,6 +41,26 @@ const loadData = (id)=>{
     image_class_id.value = id
     getData()
 }
+
+//重命名
+const handleEdit = (item)=>{
+    showPrompt("重命名",item.name)
+    .then(({value})=>{
+
+        loading.value = true
+        updateImage(item.id,value)
+        .then(res=>{
+            toast("修改成功")
+            getData()
+        }) 
+        .finally(()=>{
+            loading.value = false
+        })
+
+    })
+
+}
+
 //将方法传到父组件
 defineExpose({
     loadData
@@ -52,7 +79,7 @@ defineExpose({
                         :preview-src-list="[item.url]" :initial-index="0"> </el-image>
                         <div class="image-title">{{ item.name }}</div>
                         <div class="flex items-center justify-center p-2">
-                            <el-button type="primary" size="small" text>重命名</el-button>
+                            <el-button type="primary" size="small" text @click="handleEdit(item)">重命名</el-button>
                             <el-button type="primary" size="small" text>删除</el-button>
                         </div>
                     </el-card>
