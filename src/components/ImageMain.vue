@@ -1,8 +1,8 @@
 <script setup>
 import { 
     getImageList,
-    updateImage 
-
+    updateImage,
+    deletImage
 } from '~/api/image';
 import { ref } from 'vue';
 import { 
@@ -60,6 +60,19 @@ const handleEdit = (item)=>{
     })
 
 }
+//删除图片
+const handleDelete = (id)=>{
+    loading.value = true
+    deletImage([id])
+    .then(res=>{
+        toast("删除成功")
+        getData()
+    })
+    .finally(()=>{
+        loading.value = false
+    })
+}
+
 
 //将方法传到父组件
 defineExpose({
@@ -80,7 +93,11 @@ defineExpose({
                         <div class="image-title">{{ item.name }}</div>
                         <div class="flex items-center justify-center p-2">
                             <el-button type="primary" size="small" text @click="handleEdit(item)">重命名</el-button>
-                            <el-button type="primary" size="small" text>删除</el-button>
+                            <el-popconfirm title="是否删除该图片" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(item.id)">
+                                <template #reference>
+                                    <el-button type="primary" size="small" text >删除</el-button>
+                                </template>
+                            </el-popconfirm>
                         </div>
                     </el-card>
                 </el-col>
