@@ -9,7 +9,7 @@ import {
     showPrompt,
     toast 
 } from '~/composables/util.js';
-
+import  UploadFile  from "./UploadFile.vue";
 //分页
 const currentPage = ref(1) //默认是第一页
 const total = ref(0) //总条数
@@ -18,6 +18,11 @@ const list = ref([])
 const loading = ref(false)
 
 const image_class_id = ref(0)
+
+//上传图片
+const drawer = ref(false)
+const openUploadFile = ()=>drawer.value = true
+
 // 获取数据
 function getData(p = null){
     if(typeof p == "number"){
@@ -72,11 +77,12 @@ const handleDelete = (id)=>{
         loading.value = false
     })
 }
-
-
+// 上传成功
+const handleUploadSuccess =()=> getData(1)
 //将方法传到父组件
 defineExpose({
-    loadData
+    loadData,
+    openUploadFile
 })
 
 </script>
@@ -115,6 +121,13 @@ defineExpose({
             @current-change="getData" />
         </div>  
     </el-main>
+
+    <!-- 上传 -->
+    <el-drawer v-model="drawer" title="上传图片">
+         <UploadFile :data="{image_class_id}" @success="handleUploadSuccess" />
+    </el-drawer>
+
+
 </template>
 <style>
 .image-main {
