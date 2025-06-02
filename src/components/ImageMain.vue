@@ -48,7 +48,8 @@ defineExpose({
              <el-row :gutter="10">
                 <el-col :span="6" :offset="0" v-for="(item,index) in list" :key="index">
                     <el-card shadow="hover" class="relative mb-3" :body-style="{'padding':0}" >
-                        <el-image :src="item.url" fit="cover" class="w-full h-[150px]" style="width: 100%;"> </el-image>
+                        <el-image :src="item.url" fit="cover" class="w-full h-[150px]" style="width: 100%;" 
+                        :preview-src-list="[item.url]" :initial-index="0"> </el-image>
                         <div class="image-title">{{ item.name }}</div>
                         <div class="flex items-center justify-center p-2">
                             <el-button type="primary" size="small" text>重命名</el-button>
