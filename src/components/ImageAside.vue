@@ -13,7 +13,6 @@ const list = ref([])
 
 
 //分页
-
 const currentPage = ref(1) //默认是第一页
 const total = ref(0) //总条数
 const limit = ref(10) //每页显示10条
