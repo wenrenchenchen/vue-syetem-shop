@@ -1,7 +1,12 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import FormDrawer from '~/components/FormDrawer.vue'
-import { getNoticeList,createNotice } from '~/api/notice';
+import { 
+    getNoticeList,
+    createNotice ,
+    updateNotice,
+    deleteNotice
+} from '~/api/notice';
 import {toast} from '~/composables/util'
 
 const tableData = ref([])
@@ -38,8 +43,23 @@ getData()
 
 // 删除
 const handleDelere = (id) =>{
+    loading.value = true
+    deleteNotice(id)
+    .then(res=>{
+        toast("删除成功")
+        getData()
 
+
+    })
+    .finally(()=>{
+        loading.value = false
+    })
 }
+
+
+// 标识是新增(0)还是修改(>0) ，因为公用一个弹框
+const editId = ref(0)
+const drawerTitle = computed(()=>editId.value ? "修改" : "新增")
 
 // 表单部分
 const formDrawerRef = ref(null)
@@ -67,12 +87,15 @@ const handleSubmit =()=>{
 
         formDrawerRef.value.showLoading()
 
-        createNotice(form)
-        .then(res=>{
+        const fun = editId.value ? updateNotice(editId.value,form) : createNotice(form)
+
+        
+        fun.then(res=>{
             // console.log(form);
             
-            toast("新增成功")
-            getData(1)
+            toast( drawerTitle.value + "成功")
+            // 修改就刷新当前页，新增就刷新第一页
+            getData(editId.value ? false : 1 )
             formDrawerRef.value.close()
         })
         .finally(()=>{
@@ -80,8 +103,34 @@ const handleSubmit =()=>{
         })
     })
 }
+
+// 重置表单
+function resetForm(row = false){
+    // 清除提示
+    if(formRef.value) formRef.value.clearValidate()
+    //判断当前有没有对象，有就渲染到弹出来的抽屉
+    if(row){
+        for(const key in form){
+            form[key] = row[key]
+        }
+    }
+}
+
 // 新增
 const handleCreate = ()=>{
+    editId.value = 0
+    resetForm({
+        title:"",
+        content:""   
+    })
+    formDrawerRef.value.open()
+}
+
+
+// 修改
+const handleEdit = (row)=>{
+    editId.value = row.id
+    resetForm(row)
     formDrawerRef.value.open()
 }
 
@@ -106,7 +155,7 @@ const handleCreate = ()=>{
             <el-table-column prop="create_time" label="Name" width="380" />
             <el-table-column label="操作" width="180" align="center">
                 <template #default="scope">
-                    <el-button type="primary" size="small" text>修改</el-button>
+                    <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
                     <el-popconfirm title="是否要删除该公告" confirm-button-text="确认" cancel-button-text="取消"
                         @confirm="handleDelere(scope.row.id)">
                         <template #reference>
@@ -131,7 +180,7 @@ const handleCreate = ()=>{
         </div>
 
         
-        <FormDrawer ref="formDrawerRef" title="新增" @submit="handleSubmit">
+        <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
             <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" 
             :inline="false" >
                 <el-form-item label="公告标题" prop="title">
