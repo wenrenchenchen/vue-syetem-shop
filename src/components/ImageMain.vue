@@ -4,7 +4,7 @@ import {
     updateImage,
     deletImage
 } from '~/api/image';
-import { ref } from 'vue';
+import { ref,computed } from 'vue';
 import { 
     showPrompt,
     toast 
@@ -33,7 +33,10 @@ function getData(p = null){
     getImageList(image_class_id.value,currentPage.value)
     .then(res=>{
         total.value = res.totalCount
-        list.value = res.list
+        list.value = res.list.map(o=>{
+            o.checked =false
+            return o
+        })
     })
     .finally(()=>{
         loading.value = false
@@ -79,11 +82,37 @@ const handleDelete = (id)=>{
 }
 // 上传成功
 const handleUploadSuccess =()=> getData(1)
+
+
+// 当openChoose为true时候才显示选择框
+defineProps({
+    openChoose:{
+        type:Boolean,
+        default:false
+    }
+})
+
+
+//选中的图片
+const emit = defineEmits(["choose"]) //选中图片通知父组件
+const checkedImage = computed(()=> list.value.filter(o=>o.checked))
+const handleChooseChange = (item)=>{
+    // 选择的图片数量大于1 的时候，
+    if(item.checked && checkedImage.value.length > 1){
+        item.checked = false
+        return toast("最多只能选择1张","error")
+    }
+    emit("choose",checkedImage.value) //数量为1时，将选中的图片传回父组件
+}
+
 //将方法传到父组件
 defineExpose({
     loadData,
     openUploadFile
 })
+
+
+
 
 </script>
 <template>
@@ -93,15 +122,20 @@ defineExpose({
             <!-- <div >{{ item.url }}</div> -->
              <el-row :gutter="10">
                 <el-col :span="6" :offset="0" v-for="(item,index) in list" :key="index">
-                    <el-card shadow="hover" class="relative mb-3" :body-style="{'padding':0}" >
+                    <el-card shadow="hover" class="relative mb-3" :body-style="{'padding':0}" :class="{' border-blue-500':item.checked}" >
                         <el-image :src="item.url" fit="cover" class="w-full h-[150px]" style="width: 100%;" 
                         :preview-src-list="[item.url]" :initial-index="0"> </el-image>
                         <div class="image-title">{{ item.name }}</div>
                         <div class="flex items-center justify-center p-2">
+
+
+                            <el-checkbox v-if="openChoose" v-model="item.checked" @change="handleChooseChange(item)" />
+                            
+
                             <el-button type="primary" size="small" text @click="handleEdit(item)">重命名</el-button>
                             <el-popconfirm title="是否删除该图片" confirm-button-text="确认" cancel-button-text="取消" @confirm="handleDelete(item.id)">
                                 <template #reference>
-                                    <el-button type="primary" size="small" text >删除</el-button>
+                                    <el-button type="primary" size="small" class="!m-0" text >删除</el-button>
                                 </template>
                             </el-popconfirm>
                         </div>
