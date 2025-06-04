@@ -8,17 +8,18 @@ import {
     deleteNotice
 } from '~/api/notice';
 import {
-    getManagerList
+    getManagerList,
+    updateManagerStatus
 } from '~/api/manager';
 import { toast } from '~/composables/util'
 
 
 
 const searchForm = reactive({
-    keyword:""
+    keyword: ""
 })
 // 重置
-const resetSearchForm = ()=>{
+const resetSearchForm = () => {
     searchForm.keyword = ""
     getData()
 }
@@ -42,11 +43,14 @@ function getData(p = null) {
     }
 
     loading.value = true
-    getManagerList(currentPage.value,searchForm)
+    getManagerList(currentPage.value, searchForm)
         .then(res => {
             // console.log(res);
 
-            tableData.value = res.list
+            tableData.value = res.list.map(o => {
+                o.statusLoading = false
+                return o
+            })
             total.value = res.totalCount
         })
         .finally(() => {
@@ -143,11 +147,26 @@ const handleCreate = () => {
 }
 
 
-// 修改
+// 编辑
 const handleEdit = (row) => {
     editId.value = row.id
     resetForm(row)
     formDrawerRef.value.open()
+}
+
+// 修改状态
+const handleStatusChange = (status, row) => {
+    row.statusLoading = true
+    updateManagerStatus(row.id, status)
+        .then(res => {
+            toast("修改状态成功")
+            row.status = status
+
+
+        })
+        .finally(() => {
+            row.statusLoading = false
+        })
 }
 
 
@@ -164,17 +183,17 @@ const handleEdit = (row) => {
                         <el-input v-model="searchForm.keyword" placeholder="管理员昵称" clearable></el-input>
                     </el-form-item>
                 </el-col>
-                <el-col :span="8" :offset="8" >
+                <el-col :span="8" :offset="8">
                     <div class="flex items-center justify-end">
                         <el-button type="primary" @click="getData">搜索</el-button>
                         <el-button @click="resetSearchForm">重置</el-button>
                     </div>
                 </el-col>
             </el-row>
-            
+
 
         </el-form>
-        
+
 
         <!-- 新增/刷新按钮 -->
         <div class="flex items-center justify-between mb-4">
@@ -192,7 +211,7 @@ const handleEdit = (row) => {
                 <template #default="{ row }">
                     <div class="flex items-center">
                         <!-- 头像 -->
-                        <el-avatar :size="40" :src="row.avatar" >
+                        <el-avatar :size="40" :src="row.avatar">
                             <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png" />
                         </el-avatar>
                         <!-- id -->
@@ -204,33 +223,37 @@ const handleEdit = (row) => {
 
                 </template>
             </el-table-column>
-            
-            <el-table-column  label="所属管理员" align="center" >
-                <template #default="{ row}">
+
+            <el-table-column label="所属管理员" align="center">
+                <template #default="{ row }">
                     <!-- {{ row.role ? row.role.name : "-" }} -->
                     {{ row.role?.name || "-" }}
                 </template>
             </el-table-column>
 
-            <el-table-column label="状态" width="120" >
-                <template #default="{ row}">
-                    <el-switch :modelValue="row.status" :active-value="1" 
-                    :inactive-value="0" >
+            <el-table-column label="状态" width="120">
+                <template #default="{ row }">
+                    <el-switch :modelValue="row.status" :active-value="1" :inactive-value="0"
+                        @change="handleStatusChange($event, row)" :disabled="row.super == 1"
+                        :loading="row.statusLoading">
                     </el-switch>
-                    
+
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="180" align="center">
                 <template #default="scope">
-                    <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
-                    <el-popconfirm title="是否要删除该管理员" confirm-button-text="确认" cancel-button-text="取消"
-                        @confirm="handleDelere(scope.row.id)">
-                        <template #reference>
-                            <el-button class="px-1" text type="primary" size="small">
-                                删除
-                            </el-button>
-                        </template>
-                    </el-popconfirm>
+                    <small v-if="scope.row.super == 1" class="text-sm text-gray-500">暂无操作</small>
+                    <div v-else>
+                        <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
+                        <el-popconfirm title="是否要删除该管理员" confirm-button-text="确认" cancel-button-text="取消"
+                            @confirm="handleDelere(scope.row.id)">
+                            <template #reference>
+                                <el-button class="px-1" text type="primary" size="small">
+                                    删除
+                                </el-button>
+                            </template>
+                        </el-popconfirm>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>
