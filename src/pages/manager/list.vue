@@ -11,56 +11,35 @@ import {
 } from '~/api/manager';
 import { toast } from '~/composables/util'
 import ChooseImage from '~/components/ChooseImage.vue'
-
-
-const searchForm = reactive({
-    keyword: ""
-})
-// 重置
-const resetSearchForm = () => {
-    searchForm.keyword = ""
-    getData()
-}
+import { useInitTable } from '~/composables/useCommon.js';
 
 
 
 
 const roles = ref([])
-const tableData = ref([])
-//加载动画
-const loading = ref(false)
-
-//分页
-const currentPage = ref(1) //默认是第一页
-const total = ref(0) //总条数
-const limit = ref(10) //每页显示10条
-
-
-// 获取数据
-function getData(p = null) {
-    if (typeof p == "number") {
-        currentPage.value = p
+const {
+    searchForm,
+    resetSearchForm,
+    tableData,
+    loading,
+    currentPage,
+    total,
+    limit,
+    getData
+} = useInitTable({
+    searchForm:{
+        keyword: ""
+    },
+    getList:getManagerList,
+    onGetListSuccess:(res)=>{
+        tableData.value = res.list.map(o => {
+            o.statusLoading = false
+            return o
+        })
+        total.value = res.totalCount
+        roles.value = res.roles
     }
-
-    loading.value = true
-    getManagerList(currentPage.value, searchForm)
-        .then(res => {
-            // console.log(res);
-
-            tableData.value = res.list.map(o => {
-                o.statusLoading = false
-                return o
-            })
-            total.value = res.totalCount
-            roles.value = res.roles
-        })
-        .finally(() => {
-            loading.value = false
-        })
-}
-
-
-getData()
+})
 
 // 删除
 const handleDelere = (id) => {

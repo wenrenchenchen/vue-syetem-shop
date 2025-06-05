@@ -8,38 +8,21 @@ import {
     deleteNotice
 } from '~/api/notice';
 import {toast} from '~/composables/util'
-
-const tableData = ref([])
-
-//加载动画
-const loading = ref(false)
-
-//分页
-const currentPage = ref(1) //默认是第一页
-const total = ref(0) //总条数
-const limit = ref(10) //每页显示10条
-
-// 获取数据
-function getData(p = null){
-    if(typeof p == "number"){
-        currentPage.value = p
-    }
-    
-    loading.value = true
-    getNoticeList(currentPage.value)
-    .then(res=>{
-        // console.log(res);
-        
-        tableData.value = res.list
-        total.value = res.totalCount
-    })
-    .finally(()=>{
-        loading.value = false
-    })
-}
+import { useInitTable } from '~/composables/useCommon.js';
 
 
-getData()
+
+const roles = ref([])
+const {
+    tableData,
+    loading,
+    currentPage,
+    total,
+    limit,
+    getData
+} = useInitTable({
+    getList:getNoticeList,
+})
 
 // 删除
 const handleDelere = (id) =>{
