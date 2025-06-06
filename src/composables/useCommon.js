@@ -1,16 +1,9 @@
 import { computed, reactive, ref } from 'vue';
 import { toast } from '~/composables/util'
 
-// 列表的搜索和分页功能
+// 列表的搜索和分页功能  --  功能- 修改状态/删除
 export function useInitTable(opt = {}) {
-    // const searchForm = reactive({
-    //     keyword: ""
-    // })
-    // // 重置
-    // const resetSearchForm = () => {
-    //     searchForm.keyword = ""
-    //     getData()
-    // }
+
     let searchForm = null
     let resetSearchForm = null
     if (opt.searchForm) {
@@ -59,6 +52,34 @@ export function useInitTable(opt = {}) {
 
     getData()
 
+
+
+    // 删除
+    const handleDelere = (id) => {
+        loading.value = true
+        opt.delete(id)
+            .then(res => {
+                toast("删除成功")
+                getData()
+            })
+            .finally(() => {
+                loading.value = false
+            })
+    }
+
+    // 修改状态
+    const handleStatusChange = (status, row) => {
+        row.statusLoading = true
+        opt.updateStatus(row.id, status)
+            .then(res => {
+                toast("修改状态成功")
+                row.status = status
+            })
+            .finally(() => {
+                row.statusLoading = false
+            })
+    }
+
     return {
         searchForm,
         resetSearchForm,
@@ -67,9 +88,12 @@ export function useInitTable(opt = {}) {
         currentPage,
         total,
         limit,
-        getData
+        getData,
+        handleStatusChange,
+        handleDelere
     }
 }
+
 // 功能 - 新增 / 修改
 export function useInitForm(opt = {}) {
     // 标识是新增(0)还是修改(>0) ，因为公用一个弹框
@@ -111,9 +135,9 @@ export function useInitForm(opt = {}) {
         // 清除提示
         if (formRef.value) formRef.value.clearValidate()
         //判断当前有没有对象，有就渲染到弹出来的抽屉
-            for (const key in defaultForm) {
-                form[key] = row[key]
-            }
+        for (const key in defaultForm) {
+            form[key] = row[key]
+        }
     }
 
     // 新增
@@ -130,7 +154,7 @@ export function useInitForm(opt = {}) {
         resetForm(row)
         formDrawerRef.value.open()
     }
-    return  {
+    return {
         editId,
         drawerTitle,
         formDrawerRef,
@@ -143,3 +167,5 @@ export function useInitForm(opt = {}) {
         handleEdit
     }
 }
+
+

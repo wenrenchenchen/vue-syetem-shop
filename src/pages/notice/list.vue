@@ -19,13 +19,17 @@ const {
     currentPage,
     total,
     limit,
-    getData
+    getData,
+    handleEdit,
+    handleDelere
 } = useInitTable({
     getList: getNoticeList,
+    delete: deleteNotice
+
 })
 
 
-// 新增/修改
+// 新增/修改/删除
 const {
     drawerTitle,
     formDrawerRef,
@@ -34,7 +38,8 @@ const {
     rules,
     handleSubmit,
     handleCreate,
-    handleEdit
+
+
 } = useInitForm({
     form: {
         title: "",
@@ -60,20 +65,6 @@ const {
 
 
 
-// 删除
-const handleDelere = (id) => {
-    loading.value = true
-    deleteNotice(id)
-        .then(res => {
-            toast("删除成功")
-            getData()
-
-
-        })
-        .finally(() => {
-            loading.value = false
-        })
-}
 
 
 </script>

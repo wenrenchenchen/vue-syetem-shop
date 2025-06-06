@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
+import {  ref } from 'vue';
 import FormDrawer from '~/components/FormDrawer.vue'
 
 import {
@@ -9,13 +9,12 @@ import {
     updateManager,
     deleteManager,
 } from '~/api/manager';
-import { toast } from '~/composables/util'
 import ChooseImage from '~/components/ChooseImage.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon.js';
 
 
 
-// 搜索/分页
+// 搜索/分页 功能- 修改状态/删除
 const roles = ref([])
 const {
     searchForm,
@@ -25,7 +24,9 @@ const {
     currentPage,
     total,
     limit,
-    getData
+    getData,
+    handleStatusChange,
+    handleDelere
 } = useInitTable({
     searchForm: {
         keyword: ""
@@ -38,7 +39,9 @@ const {
         })
         total.value = res.totalCount
         roles.value = res.roles
-    }
+    },
+    updateStatus: updateManagerStatus,
+    delete: deleteManager
 })
 
 // 新增/修改
@@ -88,40 +91,6 @@ const {
 
 })
 
-// 删除
-const handleDelere = (id) => {
-    loading.value = true
-    deleteManager(id)
-        .then(res => {
-
-
-            toast("删除成功")
-            getData()
-
-
-        })
-        .finally(() => {
-            loading.value = false
-        })
-}
-
-
-
-
-// 修改状态
-const handleStatusChange = (status, row) => {
-    row.statusLoading = true
-    updateManagerStatus(row.id, status)
-        .then(res => {
-            toast("修改状态成功")
-            row.status = status
-
-
-        })
-        .finally(() => {
-            row.statusLoading = false
-        })
-}
 
 
 
