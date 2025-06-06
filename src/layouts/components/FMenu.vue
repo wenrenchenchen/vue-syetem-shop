@@ -9,6 +9,12 @@ const route = useRoute()
 // 默认选中当前路由  
 const defaultActive = ref(route.path)
 
+// 监听路由变化
+onBeforeRouteUpdate((to,from)=>{
+    defaultActive.value = to.path
+})
+
+
 // 是否折叠
 const isCollapse = computed(()=>!(store.state.asideWidth == '250px'))
 
