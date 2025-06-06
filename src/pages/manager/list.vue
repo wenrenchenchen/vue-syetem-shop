@@ -11,11 +11,11 @@ import {
 } from '~/api/manager';
 import { toast } from '~/composables/util'
 import ChooseImage from '~/components/ChooseImage.vue'
-import { useInitTable } from '~/composables/useCommon.js';
+import { useInitTable, useInitForm } from '~/composables/useCommon.js';
 
 
 
-
+// 搜索/分页
 const roles = ref([])
 const {
     searchForm,
@@ -27,11 +27,11 @@ const {
     limit,
     getData
 } = useInitTable({
-    searchForm:{
+    searchForm: {
         keyword: ""
     },
-    getList:getManagerList,
-    onGetListSuccess:(res)=>{
+    getList: getManagerList,
+    onGetListSuccess: (res) => {
         tableData.value = res.list.map(o => {
             o.statusLoading = false
             return o
@@ -39,6 +39,53 @@ const {
         total.value = res.totalCount
         roles.value = res.roles
     }
+})
+
+// 新增/修改
+const {
+    drawerTitle,
+    formDrawerRef,
+    formRef,
+    form,
+    rules,
+    handleSubmit,
+    handleCreate,
+    handleEdit
+} = useInitForm({
+    form: {
+        username: "",
+        password: "",
+        role_id: null,
+        status: 1,
+        avatar: "",
+    },
+    rules: {
+        username: [{
+            required: true, //必填的意思
+            message: '用户名不能为空', //提示
+            trigger: 'blur' //触发时机，失去焦点的时候
+        }],
+        password: [{
+            required: true,
+            message: '密码不能为空',
+            trigger: 'blur'
+        }],
+        role_id: [{
+            required: true, //必填的意思
+            message: '请选择所属角色', //提示
+            trigger: 'blur' //触发时机，失去焦点的时候
+        }],
+        avatar: [{
+            required: true, //必填的意思
+            message: '头像不能为空', //提示
+            trigger: 'blur' //触发时机，失去焦点的时候
+        }]
+    },
+    getData,
+    update: updateManager,
+    create: createManager,
+
+
 })
 
 // 删除
@@ -59,98 +106,7 @@ const handleDelere = (id) => {
 }
 
 
-// 标识是新增(0)还是修改(>0) ，因为公用一个弹框
-const editId = ref(0)
-const drawerTitle = computed(() => editId.value ? "修改" : "新增")
 
-// 表单部分
-const formDrawerRef = ref(null)
-const formRef = ref(null)
-const form = reactive({
-    username: "",
-    password: "",
-    role_id: null,
-    status: 1,
-    avatar: "",
-})
-const rules = {
-    username: [{
-        required: true, //必填的意思
-        message: '用户名不能为空', //提示
-        trigger: 'blur' //触发时机，失去焦点的时候
-    }],
-    password: [{
-        required: true,
-        message: '密码不能为空',
-        trigger: 'blur'
-    }],
-    role_id: [{
-        required: true, //必填的意思
-        message: '请选择所属角色', //提示
-        trigger: 'blur' //触发时机，失去焦点的时候
-    }],
-    avatar: [{
-        required: true, //必填的意思
-        message: '头像不能为空', //提示
-        trigger: 'blur' //触发时机，失去焦点的时候
-    }],
-}
-
-const handleSubmit = () => {
-    formRef.value.validate((valid) => {
-        if (!valid) return
-
-        formDrawerRef.value.showLoading()
-
-        const fun = editId.value ? updateManager(editId.value, form) : createManager(form)
-
-
-        fun.then(res => {
-            // console.log(form);
-
-            toast(drawerTitle.value + "成功")
-            // 修改就刷新当前页，新增就刷新第一页
-            getData(editId.value ? false : 1)
-            formDrawerRef.value.close()
-        })
-            .finally(() => {
-                formDrawerRef.value.hideLoading()
-            })
-    })
-}
-
-// 重置表单
-function resetForm(row = false) {
-    // 清除提示
-    if (formRef.value) formRef.value.clearValidate()
-    //判断当前有没有对象，有就渲染到弹出来的抽屉
-    if (row) {
-        for (const key in form) {
-            form[key] = row[key]
-        }
-    }
-}
-
-// 新增
-const handleCreate = () => {
-    editId.value = 0
-    resetForm({
-        username: "",
-        password: "",
-        role_id: null,
-        status: 1,
-        avatar: "",
-    })
-    formDrawerRef.value.open()
-}
-
-
-// 编辑
-const handleEdit = (row) => {
-    editId.value = row.id
-    resetForm(row)
-    formDrawerRef.value.open()
-}
 
 // 修改状态
 const handleStatusChange = (status, row) => {
@@ -273,7 +229,7 @@ const handleStatusChange = (status, row) => {
                 </el-form-item>
                 <el-form-item label="头像" prop="avatar">
                     <!-- 图片 -->
-                    <ChooseImage v-model="form.avatar"/>
+                    <ChooseImage v-model="form.avatar" />
                 </el-form-item>
                 <el-form-item label="所属角色" prop="role_id">
                     <el-select v-model="form.role_id" placeholder="请选择所属角色">

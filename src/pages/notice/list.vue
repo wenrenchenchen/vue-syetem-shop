@@ -1,14 +1,14 @@
 <script setup>
 import { computed, reactive, ref } from 'vue';
 import FormDrawer from '~/components/FormDrawer.vue'
-import { 
+import {
     getNoticeList,
-    createNotice ,
+    createNotice,
     updateNotice,
     deleteNotice
 } from '~/api/notice';
-import {toast} from '~/composables/util'
-import { useInitTable } from '~/composables/useCommon.js';
+import { toast } from '~/composables/util'
+import { useInitTable, useInitForm } from '~/composables/useCommon.js';
 
 
 
@@ -21,100 +21,58 @@ const {
     limit,
     getData
 } = useInitTable({
-    getList:getNoticeList,
+    getList: getNoticeList,
 })
+
+
+// 新增/修改
+const {
+    drawerTitle,
+    formDrawerRef,
+    formRef,
+    form,
+    rules,
+    handleSubmit,
+    handleCreate,
+    handleEdit
+} = useInitForm({
+    form: {
+        title: "",
+        content: ""
+    },
+    rules: {
+        title: [{
+            required: true, //必填的意思
+            message: '公告名称不能为空', //提示
+            trigger: 'blur' //触发时机，失去焦点的时候
+        }],
+        content: [{
+            required: true,
+            message: '公告内容不能为空',
+            trigger: 'blur'
+        }]
+    },
+    getData,
+    update: updateNotice,
+    create: createNotice,
+
+})
+
+
 
 // 删除
-const handleDelere = (id) =>{
+const handleDelere = (id) => {
     loading.value = true
     deleteNotice(id)
-    .then(res=>{
-        toast("删除成功")
-        getData()
+        .then(res => {
+            toast("删除成功")
+            getData()
 
 
-    })
-    .finally(()=>{
-        loading.value = false
-    })
-}
-
-
-// 标识是新增(0)还是修改(>0) ，因为公用一个弹框
-const editId = ref(0)
-const drawerTitle = computed(()=>editId.value ? "修改" : "新增")
-
-// 表单部分
-const formDrawerRef = ref(null)
-const formRef = ref(null)
-const form = reactive({
-    title:"",
-    content:""
-})
-const rules = {
-    title:[{
-        required: true, //必填的意思
-        message: '公告名称不能为空', //提示
-        trigger: 'blur' //触发时机，失去焦点的时候
-    }],
-    content:[{
-        required: true, 
-        message: '公告内容不能为空', 
-        trigger: 'blur' 
-    }]
-}
-
-const handleSubmit =()=>{
-    formRef.value.validate((valid)=>{
-        if(!valid) return
-
-        formDrawerRef.value.showLoading()
-
-        const fun = editId.value ? updateNotice(editId.value,form) : createNotice(form)
-
-        
-        fun.then(res=>{
-            // console.log(form);
-            
-            toast( drawerTitle.value + "成功")
-            // 修改就刷新当前页，新增就刷新第一页
-            getData(editId.value ? false : 1 )
-            formDrawerRef.value.close()
         })
-        .finally(()=>{
-            formDrawerRef.value.hideLoading()
+        .finally(() => {
+            loading.value = false
         })
-    })
-}
-
-// 重置表单
-function resetForm(row = false){
-    // 清除提示
-    if(formRef.value) formRef.value.clearValidate()
-    //判断当前有没有对象，有就渲染到弹出来的抽屉
-    if(row){
-        for(const key in form){
-            form[key] = row[key]
-        }
-    }
-}
-
-// 新增
-const handleCreate = ()=>{
-    editId.value = 0
-    resetForm({
-        title:"",
-        content:""   
-    })
-    formDrawerRef.value.open()
-}
-
-
-// 修改
-const handleEdit = (row)=>{
-    editId.value = row.id
-    resetForm(row)
-    formDrawerRef.value.open()
 }
 
 
@@ -153,19 +111,13 @@ const handleEdit = (row)=>{
 
         <!-- 下 ：分页 -->
         <div class="flex items-center justify-center mt-5">
-            <el-pagination 
-            background 
-            layout="prev,pager,next" 
-            :total="total" 
-            :current-page="currentPage" 
-            :page-size="limit" 
-            @current-change="getData" />
+            <el-pagination background layout="prev,pager,next" :total="total" :current-page="currentPage"
+                :page-size="limit" @current-change="getData" />
         </div>
 
-        
+
         <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
-            <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" 
-            :inline="false" >
+            <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
                 <el-form-item label="公告标题" prop="title">
                     <el-input v-model="form.title" placeholder="公告标题"></el-input>
                 </el-form-item>

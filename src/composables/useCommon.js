@@ -1,4 +1,7 @@
 import { computed, reactive, ref } from 'vue';
+import { toast } from '~/composables/util'
+
+// 列表的搜索和分页功能
 export function useInitTable(opt = {}) {
     // const searchForm = reactive({
     //     keyword: ""
@@ -10,9 +13,9 @@ export function useInitTable(opt = {}) {
     // }
     let searchForm = null
     let resetSearchForm = null
-    if(opt.searchForm){
-        searchForm = reactive({ ...opt.searchForm})
-        resetSearchForm = ()=>{
+    if (opt.searchForm) {
+        searchForm = reactive({ ...opt.searchForm })
+        resetSearchForm = () => {
             for (const key in opt.searchForm) {
                 searchForm[key] = opt.searchForm[key]
             }
@@ -39,12 +42,12 @@ export function useInitTable(opt = {}) {
         loading.value = true
         opt.getList(currentPage.value, searchForm)
             .then(res => {
-                if(opt.onGetListSuccess && typeof opt.onGetListSuccess == "function"){
+                if (opt.onGetListSuccess && typeof opt.onGetListSuccess == "function") {
                     opt.onGetListSuccess(res)
-                }else{
+                } else {
 
-                tableData.value = res.list
-                total.value = res.totalCount
+                    tableData.value = res.list
+                    total.value = res.totalCount
                 }
 
 
@@ -65,5 +68,78 @@ export function useInitTable(opt = {}) {
         total,
         limit,
         getData
+    }
+}
+// 功能 - 新增 / 修改
+export function useInitForm(opt = {}) {
+    // 标识是新增(0)还是修改(>0) ，因为公用一个弹框
+    const editId = ref(0)
+    const drawerTitle = computed(() => editId.value ? "修改" : "新增")
+
+    // 表单部分
+    const formDrawerRef = ref(null)
+    const formRef = ref(null)
+    const defaultForm = opt.form
+    const form = reactive({})
+    const rules = opt.rules || {}
+
+    const handleSubmit = () => {
+        formRef.value.validate((valid) => {
+            if (!valid) return
+
+            formDrawerRef.value.showLoading()
+
+            const fun = editId.value ? opt.update(editId.value, form) : opt.create(form)
+
+
+            fun.then(res => {
+                // console.log(form);
+
+                toast(drawerTitle.value + "成功")
+                // 修改就刷新当前页，新增就刷新第一页
+                opt.getData(editId.value ? false : 1)
+                formDrawerRef.value.close()
+            })
+                .finally(() => {
+                    formDrawerRef.value.hideLoading()
+                })
+        })
+    }
+
+    // 重置表单
+    function resetForm(row = false) {
+        // 清除提示
+        if (formRef.value) formRef.value.clearValidate()
+        //判断当前有没有对象，有就渲染到弹出来的抽屉
+            for (const key in defaultForm) {
+                form[key] = row[key]
+            }
+    }
+
+    // 新增
+    const handleCreate = () => {
+        editId.value = 0
+        resetForm(defaultForm)
+        formDrawerRef.value.open()
+    }
+
+
+    // 编辑
+    const handleEdit = (row) => {
+        editId.value = row.id
+        resetForm(row)
+        formDrawerRef.value.open()
+    }
+    return  {
+        editId,
+        drawerTitle,
+        formDrawerRef,
+        formRef,
+        form,
+        rules,
+        handleSubmit,
+        resetForm,
+        handleCreate,
+        handleEdit
     }
 }
