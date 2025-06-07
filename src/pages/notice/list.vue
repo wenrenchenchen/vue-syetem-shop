@@ -22,7 +22,6 @@ const {
     total,
     limit,
     getData,
-    handleEdit,
     handleDelere
 } = useInitTable({
     getList: getNoticeList,
@@ -40,7 +39,7 @@ const {
     rules,
     handleSubmit,
     handleCreate,
-
+    handleEdit,
 
 } = useInitForm({
     form: {
