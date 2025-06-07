@@ -7,7 +7,9 @@ import IconSelect from '~/components/IconSelect.vue';
 import {
     getRuleList,
     createRule,
-    updateRule
+    updateRule,
+    deleteRule,
+    updateRuleStatus
 } from '~/api/rule.js';
 
 import {
@@ -21,7 +23,9 @@ const defaultExpandedKeys = ref([])
 const {
     loading,
     tableData,
-    getData
+    getData,
+    handleStatusChange,
+    handleDelere
 } = useInitTable({
     getList: getRuleList,
     onGetListSuccess: (res) => {
@@ -29,7 +33,9 @@ const {
         tableData.value = res.list
         defaultExpandedKeys.value = res.list.map(o => o.id)
 
-    }
+    },
+    updateStatus: updateRuleStatus,
+    delete: deleteRule
 })
 
 
@@ -65,6 +71,13 @@ const {
 
 })
 
+// 添加子分类
+const addChild = (id) => {
+
+    handleCreate()
+    form.rule_id = id
+    form.status = 1
+}
 
 
 </script>
@@ -86,10 +99,17 @@ const {
 
                     <!-- 右边 -->
                     <div class="ml-auto">
-                        <el-switch :modelValue="data.status" :active-value="1" :inactive-value="0" />
+                        <el-switch :modelValue="data.status" :active-value="1" :inactive-value="0"
+                            @change="handleStatusChange($event, data)" />
                         <el-button text type="primary" size="small" @click.stop="handleEdit(data)">修改</el-button>
-                        <el-button text type="primary" size="small" @click="">增加</el-button>
-                        <el-button text type="primary" size="small" @click="">删除</el-button>
+                        <el-button text type="primary" size="small" @click="addChild(data.id)">增加</el-button>
+                        <el-popconfirm title="是否要删除该记录?" confirm-button-text="确认" cancel-button-text="取消"
+                            @confirm="handleDelere(data.id)">
+                            <template #reference>
+                                <el-button text type="primary" size="small" @click="">删除</el-button>
+                            </template>
+                        </el-popconfirm>
+
                     </div>
                 </div>
             </template>
@@ -112,23 +132,19 @@ const {
                 <el-form-item label="名称" prop="name">
                     <el-input v-model="form.name" style="width: 30%;" placeholder="名称"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单图标" prop="icon" v-if="form.menu == 1 ">
+                <el-form-item label="菜单图标" prop="icon" v-if="form.menu == 1">
                     <IconSelect v-model="form.icon" />
                 </el-form-item>
                 <el-form-item label="前端路由" prop="frontpath" v-if="form.menu == 1 && form.rule_id > 0">
-                    <el-input v-model="form.frontpath"  placeholder="前端路由"></el-input>
+                    <el-input v-model="form.frontpath" placeholder="前端路由"></el-input>
                 </el-form-item>
-                <el-form-item label="后端规则" prop="condition" v-if="form.menu == 0 "> 
+                <el-form-item label="后端规则" prop="condition" v-if="form.menu == 0">
                     <el-input v-model="form.condition" placeholder="后端规则"></el-input>
                 </el-form-item>
-                <el-form-item label="请求方式" prop="method" v-if="form.menu == 0 ">
+                <el-form-item label="请求方式" prop="method" v-if="form.menu == 0">
                     <el-select v-model="form.method" placeholder="请选择请求方式" class="m-2">
-                    <el-option
-                        v-for="item in ['GET','POST','PUT','DELETE']"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                    />
+                        <el-option v-for="item in ['GET', 'POST', 'PUT', 'DELETE']" :key="item" :label="item"
+                            :value="item" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="排序" prop="order">
