@@ -25,10 +25,14 @@ const {
     getData,
     handleDelete,
     handleStatusChange,
+    handleSelectionChange,
+    multipleTableRef,
+    handleMultiDelete
 } = useInitTable({
     getList: getSkusList,
     delete: deleteSkus,
     updateStatus: updateSkusStatus,
+    
 })
 
 
@@ -67,29 +71,7 @@ const {
     create: createSkus,
 
 })
-// 多选选中id
-const multSelectionIds = ref([])
-const handleSelectionChange = (e)=>{
-    multSelectionIds.value = e.map(o=>o.id)
 
-}
-// 批量删除
-const multipleTableRef = ref([])
-const handleMultiDelete = ()=>{
-    loading.value = true
-    deleteSkus(multSelectionIds.value)
-    .then(res=>{
-        toast("删除成功")
-        // 清空选中
-        if(multipleTableRef.value){
-            multipleTableRef.value.clearSelection()
-        }
-        getData()
-    })
-    .finally(()=>{
-        loading.value = false
-    })
-}
 
 </script>
 <template>
@@ -99,7 +81,7 @@ const handleMultiDelete = ()=>{
         @refresh="getData" @delete="handleMultiDelete" />
         <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe style="width: 100%" v-loading="loading">
             <!-- 多选框 -->
-            <el-table-column type="selection" :selectable="selectable" width="55" />
+            <el-table-column type="selection"  width="55" />
             <el-table-column prop="name" label="规格名称" />
             <el-table-column prop="default" label="规格值" width="380" />
             <el-table-column prop="order" label="排序" />
