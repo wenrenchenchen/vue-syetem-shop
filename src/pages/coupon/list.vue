@@ -36,7 +36,8 @@ const {
     total,
     limit,
     getData,
-    handleDelete
+    handleDelete,
+    handleStatusChange
 } = useInitTable({
     getList: getCouponList,
     onGetListSuccess:(res)=>{
@@ -47,8 +48,8 @@ const {
         })
         total.value = res.totalCount
     },
-    delete: deleteCoupon
-
+    delete: deleteCoupon,
+    updateStatus:updateCouponStatus
 })
 
 
@@ -134,8 +135,10 @@ const timerange = computed({
             <el-table-column prop="used" label="已使用" />
             <el-table-column label="操作" width="180" align="center">
                 <template #default="scope">
-                    <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
-                    <el-popconfirm title="是否要删除该公告" confirm-button-text="确认" cancel-button-text="取消"
+
+                    <el-button  v-if="scope.row.statusText == '未开始'" type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
+
+                    <el-popconfirm title="是否要删除该优惠券？" v-if="scope.row.statusText != '领取中'" confirm-button-text="确认" cancel-button-text="取消"
                         @confirm="handleDelete(scope.row.id)">
                         <template #reference>
                             <el-button class="px-1" text type="primary" size="small">
@@ -143,6 +146,16 @@ const timerange = computed({
                             </el-button>
                         </template>
                     </el-popconfirm>
+
+                    <el-popconfirm v-if="scope.row.statusText == '领取中'" title="是否要让该优惠券失效？" confirm-button-text="失效" cancel-button-text="取消"
+                        @confirm="handleStatusChange(0,scope.row)">
+                        <template #reference>
+                            <el-button class="px-1"  type="danger" size="small">
+                                失效
+                            </el-button>
+                        </template>
+                    </el-popconfirm>
+
                 </template>
             </el-table-column>
         </el-table>

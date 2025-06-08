@@ -12,7 +12,7 @@ export function updateCoupon(id,data){
 export function deleteCoupon(id){
     return axios.post(`admin/coupon/${id}/delete`)
 }
-export function updateCouponStatus(id, status) {
+export function updateCouponStatus(id) {
     return axios.post(`/admin/coupon/${id}/update_status`, {
         status:0
     })
