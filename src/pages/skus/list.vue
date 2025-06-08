@@ -2,6 +2,7 @@
 import { computed, reactive, ref } from 'vue';
 import FormDrawer from '~/components/FormDrawer.vue'
 import ListHeader from '~/components/ListHeader.vue'
+import TagInput from '~/components/TagInput.vue'
 
 import {
     getSkusList,
@@ -109,7 +110,7 @@ const {
         </div>
 
         <!-- 新增/修改的弹框 -->
-        <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
+        <FormDrawer  destroyOnClose ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
             <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
                 <el-form-item label="规格名称" prop="name">
                     <el-input v-model="form.name" placeholder="规格名称"></el-input>
@@ -121,11 +122,10 @@ const {
                     <el-switch v-model="form.status" :active-value="1" :inactive-value="0"></el-switch>
                 </el-form-item>
                 <el-form-item label="规格值" prop="default">
-                    <el-input v-model="form.default" placeholder="规格值"></el-input>
+                    <TagInput v-model="form.default"/>
                 </el-form-item>
             </el-form>
         </FormDrawer>
-
 
     </el-card>
 </template>
