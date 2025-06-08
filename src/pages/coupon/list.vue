@@ -13,7 +13,20 @@ import {
 import { toast } from '~/composables/util'
 import { useInitTable, useInitForm } from '~/composables/useCommon.js';
 
-
+function formatStatus(row){
+    let s = "领取中"
+    let start_time = (new Date(row.start_time)).getTime()
+    let now = (new Date().getTime())
+    let end_time = (new Date(row.end_time)).getTime()
+    if(start_time > now){
+        s = "未开始"
+    }else if(end_time < now){
+        s = "已结束"
+    }else if(row.status == 0){
+        s = "已失效"
+    }
+    return s
+}
 
 const roles = ref([])
 const {
@@ -26,6 +39,14 @@ const {
     handleDelete
 } = useInitTable({
     getList: getCouponList,
+    onGetListSuccess:(res)=>{
+        tableData.value = res.list.map(o=>{
+            // 转换优惠券状态
+            o.statusText = formatStatus(o)
+            return o
+        })
+        total.value = res.totalCount
+    },
     delete: deleteCoupon
 
 })
@@ -45,13 +66,14 @@ const {
 } = useInitForm({
     form: {
         name: "",
-        type: "",
-        value: "",
-        total: "",
-        min_price: "",
-        start_time: "",
-        end_time: "",
+        type: 0,
+        value: 0,
+        total: 100,
+        min_price: 0,
+        start_time: null,
+        end_time:null ,
         order: 50,
+        desc: "",
     },
     rules: {
         title: [{
@@ -59,20 +81,32 @@ const {
             message: '公告名称不能为空', //提示
             trigger: 'blur' //触发时机，失去焦点的时候
         }],
-        content: [{
-            required: true,
-            message: '公告内容不能为空',
-            trigger: 'blur'
-        }]
+
     },
     getData,
     update: updateCoupon,
     create: createCoupon,
 
+    beforeSubmit:(f)=>{
+        if(typeof f.start_time != "number"){
+            f.start_time = (new Date(f.start_time)).getTime()
+        }
+        if(typeof f.end_time != "number"){
+            f.end_time = (new Date(f.end_time)).getTime()
+        }
+        return f
+    },
 })
 
-
-
+const timerange = computed({
+    get(){
+        return form.start_time && form.end_time ? [form.start_time,form.end_time] : []
+    },
+    set(val){
+        form.start_time = val[0],
+        form.end_time = val[1]
+    }
+})
 
 
 </script>
@@ -84,7 +118,7 @@ const {
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column  label="优惠券名称" >
                 <template #default="{ row }">
-                    <div class="border border-dashed py-2 px-4 rounded">
+                    <div class="border border-dashed py-2 px-4 rounded" :class="row.statusText == '领取中' ? 'active' : 'inactive'">
                         <h5 class="font-bold text-md">{{ row.name }}</h5>
                         <small>{{ row.start_time }} ~ {{ row.end_time }}</small>
                     </div>
@@ -93,7 +127,7 @@ const {
             <el-table-column prop="statusText" label="状态" />
             <el-table-column  label="优惠" >
                 <template #default="{ row }">
-                    {{ row.type ? "满减" : "折扣" }}{{ row.type ? ("￥" + row.value) : (row.value+"折") }}
+                    {{ row.type == 0 ? "满减" : "折扣" }}{{ row.type == 0 ? ("￥" + row.value) : (row.value+"折") }}
                 </template>
             </el-table-column>
             <el-table-column prop="total" label="发布数量" />
@@ -122,16 +156,62 @@ const {
 
         <FormDrawer ref="formDrawerRef" :title="drawerTitle" @submit="handleSubmit">
             <el-form :model="form" ref="formRef" :rules="rules" label-width="80px" :inline="false">
-                <el-form-item label="公告标题" prop="title">
-                    <el-input v-model="form.title" placeholder="公告标题"></el-input>
+                <el-form-item label="优惠券名称" prop="name" >
+                    <el-input v-model="form.name" placeholder="优惠券名称" style="width: 50%;" ></el-input>
                 </el-form-item>
-                <el-form-item label="公告内容" prop="content">
-                    <el-input v-model="form.content" placeholder="公告内容" type="textarea" :rows="5"></el-input>
+                <el-form-item label="类型" prop="type" >
+                    <el-radio-group v-model="form.type" >
+                        <el-radio :value="0" border>满减</el-radio>
+                        <el-radio :value="1" border>折扣</el-radio>
+                    </el-radio-group>  
                 </el-form-item>
+                <el-form-item label="面值" prop="value" >
+                    <el-input v-model="form.value" placeholder="面值" style="width: 50%;"  >
+                        <template #append>{{ form.type ? "折" : "元" }}</template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="发行量" prop="total" >
+                    <el-input-number v-model="form.total" :min="0" :max="10000"></el-input-number>
+                </el-form-item>
+
+                <el-form-item label="最低使用价格" prop="min_price" >
+                    <el-input v-model="form.min_price" placeholder="最低使用价格" type="number" ></el-input>
+                </el-form-item>
+
+                <el-form-item label="排序" prop="order" >
+                    <el-input-number v-model="form.order" :min="0" :max="1000"></el-input-number>
+                </el-form-item>
+
+                <el-form-item label="活动时间" prop="content" >
+                    <el-date-picker
+                        :editable = "false"
+                        v-model="timerange"
+                        value-format="YYYY-MM-DD HH:mm:ss"
+                        type="datetimerange"
+                        range-separator="To"
+                        start-placeholder="开始时间"
+                        end-placeholder="结束时间"
+                    />
+                </el-form-item>
+
+                <el-form-item label="描述" prop="desc" >
+                    <el-input v-model="form.desc" placeholder="描述" type="textarea" :row="5"></el-input>
+                </el-form-item>
+
+
             </el-form>
         </FormDrawer>
     </el-card>
 
 </template>
 
-<style></style>
+<style>
+.active{
+    @apply border-rose-200 bg-rose-50 text-red-400;
+}
+.inactive{
+    @apply border-gray-200 bg-gray-50 text-gray-400;
+}
+
+</style>
