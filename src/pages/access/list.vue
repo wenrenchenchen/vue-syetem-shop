@@ -25,7 +25,7 @@ const {
     tableData,
     getData,
     handleStatusChange,
-    handleDelere
+    handleDelete
 } = useInitTable({
     getList: getRuleList,
     onGetListSuccess: (res) => {
@@ -104,7 +104,7 @@ const addChild = (id) => {
                         <el-button text type="primary" size="small" @click.stop="handleEdit(data)">修改</el-button>
                         <el-button text type="primary" size="small" @click="addChild(data.id)">增加</el-button>
                         <el-popconfirm title="是否要删除该记录?" confirm-button-text="确认" cancel-button-text="取消"
-                            @confirm="handleDelere(data.id)">
+                            @confirm="handleDelete(data.id)">
                             <template #reference>
                                 <el-button text type="primary" size="small" @click="">删除</el-button>
                             </template>

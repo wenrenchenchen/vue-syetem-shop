@@ -22,7 +22,7 @@ const {
     total,
     limit,
     getData,
-    handleDelere
+    handleDelete
 } = useInitTable({
     getList: getNoticeList,
     delete: deleteNotice
@@ -81,7 +81,7 @@ const {
                 <template #default="scope">
                     <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
                     <el-popconfirm title="是否要删除该公告" confirm-button-text="确认" cancel-button-text="取消"
-                        @confirm="handleDelere(scope.row.id)">
+                        @confirm="handleDelete(scope.row.id)">
                         <template #reference>
                             <el-button class="px-1" text type="primary" size="small">
                                 删除

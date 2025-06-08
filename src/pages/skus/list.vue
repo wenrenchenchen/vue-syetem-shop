@@ -15,6 +15,7 @@ import { toast } from '~/composables/util'
 import { useInitTable, useInitForm } from '~/composables/useCommon.js';
 
 
+
 const {
     tableData,
     loading,
@@ -22,7 +23,7 @@ const {
     total,
     limit,
     getData,
-    handleDelere,
+    handleDelete,
     handleStatusChange,
 } = useInitTable({
     getList: getSkusList,
@@ -66,14 +67,39 @@ const {
     create: createSkus,
 
 })
+// 多选选中id
+const multSelectionIds = ref([])
+const handleSelectionChange = (e)=>{
+    multSelectionIds.value = e.map(o=>o.id)
 
+}
+// 批量删除
+const multipleTableRef = ref([])
+const handleMultiDelete = ()=>{
+    loading.value = true
+    deleteSkus(multSelectionIds.value)
+    .then(res=>{
+        toast("删除成功")
+        // 清空选中
+        if(multipleTableRef.value){
+            multipleTableRef.value.clearSelection()
+        }
+        getData()
+    })
+    .finally(()=>{
+        loading.value = false
+    })
+}
 
 </script>
 <template>
     <el-card shadow="never" class="border-0">
         <!-- 新增/刷新按钮 -->
-        <ListHeader @create="handleCreate" @refresh="getData" />
-        <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+        <ListHeader layout="create,delete,refresh" @create="handleCreate" 
+        @refresh="getData" @delete="handleMultiDelete" />
+        <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe style="width: 100%" v-loading="loading">
+            <!-- 多选框 -->
+            <el-table-column type="selection" :selectable="selectable" width="55" />
             <el-table-column prop="name" label="规格名称" />
             <el-table-column prop="default" label="规格值" width="380" />
             <el-table-column prop="order" label="排序" />
@@ -92,7 +118,7 @@ const {
                     <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
                     <!-- 删除 -->
                     <el-popconfirm title="是否要删除该规格" confirm-button-text="确认" cancel-button-text="取消"
-                        @confirm="handleDelere(scope.row.id)">
+                        @confirm="handleDelete(scope.row.id)">
                         <template #reference>
                             <el-button class="px-1" text type="primary" size="small">
                                 删除

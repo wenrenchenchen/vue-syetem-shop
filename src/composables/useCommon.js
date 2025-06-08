@@ -55,7 +55,7 @@ export function useInitTable(opt = {}) {
 
 
     // 删除
-    const handleDelere = (id) => {
+    const handleDelete = (id) => {
         loading.value = true
         opt.delete(id)
             .then(res => {
@@ -90,7 +90,7 @@ export function useInitTable(opt = {}) {
         limit,
         getData,
         handleStatusChange,
-        handleDelere
+        handleDelete
     }
 }
 
