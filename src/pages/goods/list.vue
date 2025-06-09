@@ -151,44 +151,62 @@ const tabbars = [{
 
 
             <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-                <el-table-column label="管理员" width="200">
+                <el-table-column label="商品" width="300">
                     <template #default="{ row }">
-                        <div class="flex items-center">
-                            <!-- 头像 -->
-                            <el-avatar :size="40" :src="row.avatar">
-                                <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png" />
-                            </el-avatar>
-                            <!-- id -->
-                            <div class="ml-3">
-                                <h6>{{ row.username }}</h6>
-                                <small>ID:{{ row.id }}</small>
+                        <div class="flex ">
+                            <!-- 左边 -->
+                             <el-image class="mr-3 rounded" style="width: 50px; height: 50px" :lazy="true" :src="row.cover" :fit="fit"></el-image>
+
+                            <!-- 右边 -->
+                            <div class="flex-1">
+                                <p>{{ row.title }}</p>
+                                <div > 
+                                    <span class="text-rose-500">￥{{ row.min_price }}</span>
+                                    <el-divider direction="vertical" />
+                                    <span class="text-gray-500 text-xs">￥{{ row.min_oprice }}</span>
+                                </div>
+                                
+                                <p class=" text-gray-400 text-xs mb-1" >分类:{{ row.category? row.category.name : "未分类"  }}</p>
+                                <p class=" text-gray-400 text-xs ">创建时间:{{ row.create_time }}</p>
                             </div>
                         </div>
 
                     </template>
                 </el-table-column>
 
-                <el-table-column label="所属管理员" align="center">
+                <el-table-column label="实际销量" width="70" prop="sale_count" align="center" />
+
+
+
+                <el-table-column label="商品状态" width="100">
                     <template #default="{ row }">
-                        <!-- {{ row.role ? row.role.name : "-" }} -->
-                        {{ row.role?.name || "-" }}
+                        <el-tag :type="row.status ? 'success' : 'danger'" size="small">{{row.status ? '上架' : '仓库'}}</el-tag>
                     </template>
                 </el-table-column>
 
-                <el-table-column label="状态" width="120">
+                <el-table-column label="审核状态" width="120" align="center">
                     <template #default="{ row }">
-                        <el-switch :modelValue="row.status" :active-value="1" :inactive-value="0"
-                            @change="handleStatusChange($event, row)" :disabled="row.super == 1"
-                            :loading="row.statusLoading">
-                        </el-switch>
+                        <div v-if="row.ischeck == 0" class="flex flex-col">
+                            <el-button type="success"  size="small" plain >审核通过</el-button>
+                            <el-button class="mt-2 !ml-0" type="danger" size="small" plain >审核拒绝</el-button>
+                        </div>
+                        <span v-else>{{row.ischeck == 1 ? '通过' : '拒绝'}}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="180" align="center">
+                <el-table-column label="总库存" width="90" align="center" prop="stock" />
+
+
+
+                <el-table-column label="操作"  align="center">
                     <template #default="scope">
-                        <small v-if="scope.row.super == 1" class="text-sm text-gray-500">暂无操作</small>
-                        <div v-else>
-                            <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
-                            <el-popconfirm title="是否要删除该管理员" confirm-button-text="确认" cancel-button-text="取消"
+                        <div>
+
+                            <el-button class="px-1" type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
+                            <el-button class="px-1" type="primary" size="small" text >商品规格</el-button>
+                            <el-button class="px-1" type="primary" size="small" text >设置轮播图</el-button>
+                            <el-button class="px-1" type="primary" size="small" text >商品详情</el-button>
+
+                            <el-popconfirm title="是否要删除该商品" confirm-button-text="确认" cancel-button-text="取消"
                                 @confirm="handleDelete(scope.row.id)">
                                 <template #reference>
                                     <el-button class="px-1" text type="primary" size="small">
@@ -196,6 +214,7 @@ const tabbars = [{
                                     </el-button>
                                 </template>
                             </el-popconfirm>
+
                         </div>
                     </template>
                 </el-table-column>
