@@ -184,7 +184,7 @@ const tabbars = [{
                     </template>
                 </el-table-column>
 
-                <el-table-column label="审核状态" width="120" align="center">
+                <el-table-column label="审核状态" width="120" align="center"  v-if="searchForm.tab != 'delete'" >
                     <template #default="{ row }">
                         <div v-if="row.ischeck == 0" class="flex flex-col">
                             <el-button type="success"  size="small" plain >审核通过</el-button>
@@ -199,7 +199,7 @@ const tabbars = [{
 
                 <el-table-column label="操作"  align="center">
                     <template #default="scope">
-                        <div>
+                        <div v-if="searchForm.tab != 'delete'">
 
                             <el-button class="px-1" type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
                             <el-button class="px-1" type="primary" size="small" text >商品规格</el-button>
@@ -214,8 +214,8 @@ const tabbars = [{
                                     </el-button>
                                 </template>
                             </el-popconfirm>
-
                         </div>
+                        <span v-else>暂无操作</span>
                     </template>
                 </el-table-column>
             </el-table>
