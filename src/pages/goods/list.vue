@@ -1,5 +1,5 @@
 <script setup>
-import {  ref } from 'vue';
+import { ref } from 'vue';
 import FormDrawer from '~/components/FormDrawer.vue'
 import ListHeader from '~/components/ListHeader.vue'
 
@@ -13,8 +13,8 @@ import {
 import { getCategoryList } from '~/api/category';
 import ChooseImage from '~/components/ChooseImage.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon.js';
-
-
+import Search from '~/components/Search.vue';
+import SearchItem from '~/components/SearchItem.vue';
 
 // 搜索/分页 功能- 修改状态/删除
 const roles = ref([])
@@ -32,8 +32,8 @@ const {
 } = useInitTable({
     searchForm: {
         title: "",
-        tab:"",
-        category_id:null,
+        tab: "",
+        category_id: null,
     },
     getList: getGoodsList,
     onGetListSuccess: (res) => {
@@ -97,78 +97,60 @@ const {
 
 // 订单类型
 const tabbars = [{
-    key:"all",
-    name:"全部"
-},{
-    key:"checking",
-    name:"审核中"
-},{
-    key:"saling",
-    name:"出售中"
-},{
-    key:"off",
-    name:"已下架"
-},{
-    key:"min_stock",
-    name:"库存预警"
-},{
-    key:"delete",
-    name:"回收站"
+    key: "all",
+    name: "全部"
+}, {
+    key: "checking",
+    name: "审核中"
+}, {
+    key: "saling",
+    name: "出售中"
+}, {
+    key: "off",
+    name: "已下架"
+}, {
+    key: "min_stock",
+    name: "库存预警"
+}, {
+    key: "delete",
+    name: "回收站"
 },]
 
 // 商品分类数据
 const category_list = ref([])
-getCategoryList().then(res=>category_list.value = res)
+getCategoryList().then(res => category_list.value = res)
 const showSearch = ref(false)
 
 </script>
 
 <template>
     <div>
-        <el-tabs v-model="searchForm.tab" class="mb-4 custom-tabs"  @tab-change="getData" >
-            <el-tab-pane :label="item.name"  :name="item.key" v-for="(item,index) in tabbars" :key="index"></el-tab-pane>
+        <el-tabs v-model="searchForm.tab" class="mb-4 custom-tabs" @tab-change="getData">
+            <el-tab-pane :label="item.name" :name="item.key" v-for="(item, index) in tabbars" :key="index"></el-tab-pane>
 
         </el-tabs>
 
         <el-card shadow="never" class="border-0">
             <!-- 搜索 -->
-            <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
-                <el-row :gutter="20">
-                    <el-col :span="8" :offset="0">
-                        <el-form-item label="关键词">
-                            <el-input v-model="searchForm.title" placeholder="商品名称" clearable></el-input>
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8" :offset="0" v-if="showSearch">
-                        <el-form-item label="商品分类" prop="category_id" >
-                            <el-select v-model="searchForm.category_id" placeholder="请选择商品分类" clearable>
-                                <el-option v-for="item in category_list"
-                                    :key="item.id"
-                                    :label="item.name"
-                                    :value="item.id">
-                                </el-option>
-                            </el-select>
-                            
-                        </el-form-item>
-                    </el-col>
-                    <el-col :span="8" :offset="showSearch ? 0 : 8">
-                        <div class="flex items-center justify-end">
-                            <el-button type="primary" @click="getData">搜索</el-button>
-                            <el-button @click="resetSearchForm">重置</el-button>
-                            <el-button type="primary" text @click="showSearch = !showSearch">
-                                {{ showSearch ? '收起':'展开' }}
-                                <el-icon >
-                                    <ArrowUp v-if="showSearch" />
-                                    <ArrowDown v-else />
-                                </el-icon>
-                            </el-button>
-                            
-                        </div>
-                    </el-col>
-                </el-row>
+            <Search :model="searchForm" @search="getData" @reset="resetSearchForm">
+                <SearchItem label="关键词">
+                    <el-input v-model="searchForm.title" placeholder="商品名称" clearable></el-input>
+                </SearchItem>
+
+                <template #show>
+                    <SearchItem label="商品分类">
+                        <el-select v-model="searchForm.category_id" placeholder="请选择商品分类" clearable>
+                            <el-option v-for="item in category_list" :key="item.id" :label="item.name"
+                                :value="item.id">
+                            </el-option>
+                        </el-select>    
+                    </SearchItem>
 
 
-            </el-form>
+                </template>
+
+            </Search>
+
 
 
             <!-- 新增/刷新按钮 -->
@@ -180,18 +162,20 @@ const showSearch = ref(false)
                     <template #default="{ row }">
                         <div class="flex ">
                             <!-- 左边 -->
-                             <el-image class="mr-3 rounded" style="width: 50px; height: 50px" :lazy="true" :src="row.cover" :fit="fit"></el-image>
+                            <el-image class="mr-3 rounded" style="width: 50px; height: 50px" :lazy="true"
+                                :src="row.cover" fit="cover"></el-image>
 
                             <!-- 右边 -->
                             <div class="flex-1">
                                 <p>{{ row.title }}</p>
-                                <div > 
+                                <div>
                                     <span class="text-rose-500">￥{{ row.min_price }}</span>
                                     <el-divider direction="vertical" />
                                     <span class="text-gray-500 text-xs">￥{{ row.min_oprice }}</span>
                                 </div>
-                                
-                                <p class=" text-gray-400 text-xs mb-1" >分类:{{ row.category? row.category.name : "未分类"  }}</p>
+
+                                <p class=" text-gray-400 text-xs mb-1">分类:{{ row.category ? row.category.name : "未分类" }}
+                                </p>
                                 <p class=" text-gray-400 text-xs ">创建时间:{{ row.create_time }}</p>
                             </div>
                         </div>
@@ -205,31 +189,33 @@ const showSearch = ref(false)
 
                 <el-table-column label="商品状态" width="100">
                     <template #default="{ row }">
-                        <el-tag :type="row.status ? 'success' : 'danger'" size="small">{{row.status ? '上架' : '仓库'}}</el-tag>
+                        <el-tag :type="row.status ? 'success' : 'danger'" size="small">{{ row.status ? '上架' :
+                            '仓库'}}</el-tag>
                     </template>
                 </el-table-column>
 
-                <el-table-column label="审核状态" width="120" align="center"  v-if="searchForm.tab != 'delete'" >
+                <el-table-column label="审核状态" width="120" align="center" v-if="searchForm.tab != 'delete'">
                     <template #default="{ row }">
                         <div v-if="row.ischeck == 0" class="flex flex-col">
-                            <el-button type="success"  size="small" plain >审核通过</el-button>
-                            <el-button class="mt-2 !ml-0" type="danger" size="small" plain >审核拒绝</el-button>
+                            <el-button type="success" size="small" plain>审核通过</el-button>
+                            <el-button class="mt-2 !ml-0" type="danger" size="small" plain>审核拒绝</el-button>
                         </div>
-                        <span v-else>{{row.ischeck == 1 ? '通过' : '拒绝'}}</span>
+                        <span v-else>{{ row.ischeck == 1 ? '通过' : '拒绝' }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="总库存" width="90" align="center" prop="stock" />
 
 
 
-                <el-table-column label="操作"  align="center">
+                <el-table-column label="操作" align="center">
                     <template #default="scope">
                         <div v-if="searchForm.tab != 'delete'">
 
-                            <el-button class="px-1" type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
-                            <el-button class="px-1" type="primary" size="small" text >商品规格</el-button>
-                            <el-button class="px-1" type="primary" size="small" text >设置轮播图</el-button>
-                            <el-button class="px-1" type="primary" size="small" text >商品详情</el-button>
+                            <el-button class="px-1" type="primary" size="small" text
+                                @click="handleEdit(scope.row)">修改</el-button>
+                            <el-button class="px-1" type="primary" size="small" text>商品规格</el-button>
+                            <el-button class="px-1" type="primary" size="small" text>设置轮播图</el-button>
+                            <el-button class="px-1" type="primary" size="small" text>商品详情</el-button>
 
                             <el-popconfirm title="是否要删除该商品" confirm-button-text="确认" cancel-button-text="取消"
                                 @confirm="handleDelete(scope.row.id)">
@@ -285,8 +271,6 @@ const showSearch = ref(false)
 
 <style>
 .custom-tabs .el-tabs__item {
-  background-color: transparent !important;
+    background-color: transparent !important;
 }
-
-
 </style>
