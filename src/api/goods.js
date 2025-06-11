@@ -7,9 +7,9 @@ export function getGoodsList(page, query = {}) {
     const r = queryParams(query)
     return axios.get(`/admin/goods/${page}${r}`)
 }
-
+// 批量上架，下架
 export function updateGoodsStatus(ids, status) {
-    return axios.post("/admin/goods/changestatus", {
+    return axios.post(`/admin/goods/changestatus`, {
         ids,
         status
 
@@ -23,8 +23,7 @@ export function updateGoods(id,data){
     return axios.post(`admin/goods/${id}`,data)
 }
 export function deleteGoods(ids){
-    return axios.post("admin/goods/delete_all",{
+    return axios.post(`/admin/goods/delete_all`,{
         ids
     })
 }
-

@@ -19,6 +19,10 @@ import SearchItem from '~/components/SearchItem.vue';
 // 搜索/分页 功能- 修改状态/删除
 
 const {
+    handleSelectionChange,
+    handleMultiDelete,
+    multipleTableRef,
+
     searchForm,
     resetSearchForm,
     tableData,
@@ -27,12 +31,12 @@ const {
     total,
     limit,
     getData,
-    handleStatusChange,
-    handleDelete
+    handleDelete,
+    handleMultiStatusChange,
 } = useInitTable({
     searchForm: {
         title: "",
-        tab: "",
+        tab: "all",
         category_id: null,
     },
     getList: getGoodsList,
@@ -50,6 +54,7 @@ const {
 
 // 新增/修改
 const {
+    
     drawerTitle,
     formDrawerRef,
     formRef,
@@ -57,46 +62,27 @@ const {
     rules,
     handleSubmit,
     handleCreate,
-    handleEdit
+    handleEdit,
+
 } = useInitForm({
     form: {
-	title:null,	//商品名称 		
-	category_id:null,//商品分类
-	cover:null,//商品封面
-	desc:null, //商品描述
-	unit:"件",//商品单位
-	stock:100,//总库存
-	min_stock:10,//库存预警
-	status:1,//是否上架
-	stock_display:1,//库存显示
-	min_price:0, //最低销售价
-	min_oprice:0 //最低原价
+        title:null,	    //商品名称 		
+        category_id:null,   //商品分类
+        cover:null, //商品封面
+        desc:null,   //商品描述
+        unit:"件",  //商品单位
+        stock:100,  //总库存
+        min_stock:10,   //库存预警
+        status:1,   //是否上架
+        stock_display:1,    //库存显示
+        min_price:0,    //最低销售价
+        min_oprice:0    //最低原价
     },
-    rules: {
-        username: [{
-            required: true, //必填的意思
-            message: '用户名不能为空', //提示
-            trigger: 'blur' //触发时机，失去焦点的时候
-        }],
-        password: [{
-            required: true,
-            message: '密码不能为空',
-            trigger: 'blur'
-        }],
-        role_id: [{
-            required: true, //必填的意思
-            message: '请选择所属角色', //提示
-            trigger: 'blur' //触发时机，失去焦点的时候
-        }],
-        avatar: [{
-            required: true, //必填的意思
-            message: '头像不能为空', //提示
-            trigger: 'blur' //触发时机，失去焦点的时候
-        }]
-    },
-    getData,
-    update: updateGoods,
-    create: createGoods,
+        rules: {
+        },
+        getData,
+        update: updateGoods,
+        create: createGoods,
 
 
 })
@@ -160,10 +146,16 @@ const showSearch = ref(false)
 
 
             <!-- 新增/刷新按钮 -->
-            <ListHeader @create="handleCreate" @refresh="getData" />
+            <ListHeader layout="create,delete,refresh" @delete="handleMultiDelete" @create="handleCreate" @refresh="getData" >
+                <el-button  size="small" @click="handleMultiStatusChange(1)" v-if="searchForm.tab=='all' || searchForm.tab =='off'">上架</el-button>
+                <el-button  size="small" @click="handleMultiStatusChange(0)" v-if="searchForm.tab=='all' || searchForm.tab =='saling'">下架</el-button>
+                
+            </ListHeader>
+                
 
+            <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe style="width: 100%" v-loading="loading">
 
-            <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+                <el-table-column type="selection"  width="55" />
                 <el-table-column label="商品" width="300">
                     <template #default="{ row }">
                         <div class="flex ">
