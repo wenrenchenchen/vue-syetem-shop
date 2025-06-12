@@ -15,6 +15,7 @@ import ChooseImage from '~/components/ChooseImage.vue'
 import { useInitTable, useInitForm } from '~/composables/useCommon.js';
 import Search from '~/components/Search.vue';
 import SearchItem from '~/components/SearchItem.vue';
+import banners from './banners.vue';
 
 // 搜索/分页 功能- 修改状态/删除
 
@@ -42,7 +43,7 @@ const {
     getList: getGoodsList,
     onGetListSuccess: (res) => {
         tableData.value = res.list.map(o => {
-            o.statusLoading = false
+            o.bannersLoading = false
             return o
         })
         total.value = res.totalCount
@@ -112,6 +113,12 @@ const tabbars = [{
 const category_list = ref([])
 getCategoryList().then(res => category_list.value = res)
 const showSearch = ref(false)
+
+
+//设置轮播图
+const bannerRef = ref(null)
+const handleSetGoodsBanners = (row)=>{bannerRef.value.open(row)}
+
 
 </script>
 
@@ -212,7 +219,10 @@ const showSearch = ref(false)
                             <el-button class="px-1" type="primary" size="small" text
                                 @click="handleEdit(scope.row)">修改</el-button>
                             <el-button class="px-1" type="primary" size="small" text>商品规格</el-button>
-                            <el-button class="px-1" type="primary" size="small" text>设置轮播图</el-button>
+                            <el-button class="px-1" type="primary" size="small"
+                             text @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading">
+                                设置轮播图
+                            </el-button>
                             <el-button class="px-1" type="primary" size="small" text>商品详情</el-button>
 
                             <el-popconfirm title="是否要删除该商品" confirm-button-text="确认" cancel-button-text="取消"
@@ -301,17 +311,9 @@ const showSearch = ref(false)
                 </el-form>
             </FormDrawer>
         </el-card>
-	<!-- title:null,	//商品名称 		
-	category_id:null,//商品分类
-	cover:null,//商品封面
-	desc:null, //商品描述
-	unit:"件",//商品单位
-	stock:100,//总库存
-	min_stock:10,//库存预警
-	status:1,//是否上架
-	stock_display:1,//库存显示
-	min_price:0, //最低销售价
-	min_oprice:0 //最低原价 -->
+
+
+        <banners ref="bannerRef" />
     </div>
 
 </template>

@@ -85,10 +85,14 @@ const handleUploadSuccess =()=> getData(1)
 
 
 // 当openChoose为true时候才显示选择框
-defineProps({
+const props = defineProps({
     openChoose:{
         type:Boolean,
         default:false
+    },
+    limit:{
+        type:Number,
+        default:1
     }
 })
 
@@ -98,9 +102,9 @@ const emit = defineEmits(["choose"]) //选中图片通知父组件
 const checkedImage = computed(()=> list.value.filter(o=>o.checked))
 const handleChooseChange = (item)=>{
     // 选择的图片数量大于1 的时候，
-    if(item.checked && checkedImage.value.length > 1){
+    if(item.checked && checkedImage.value.length > props.limit){
         item.checked = false
-        return toast("最多只能选择1张","error")
+        return toast(`最多只能选择${props.limit}张`,"error")
     }
     emit("choose",checkedImage.value) //数量为1时，将选中的图片传回父组件
 }
