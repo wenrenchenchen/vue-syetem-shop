@@ -27,6 +27,7 @@ const open =(row)=>{
     })
 }
 
+const emit = defineEmits(["reloadData"])
 const loading = ref(false)
 const Submit = ()=>{
     loading.value = true
@@ -34,6 +35,7 @@ const Submit = ()=>{
     .then(res=>{
         toast("设置轮播图成功")
         dialogVisible.value = false
+        emit("reloadData")
     })
     .finally(()=>{
         loading.value = false
