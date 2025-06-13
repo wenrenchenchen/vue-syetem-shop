@@ -7,9 +7,11 @@ import {
 }from "~/api/goods.js"
 import { toast } from '~/composables/util.js'
 import FormDrawer from '~/components/FormDrawer.vue';
-
-import Editor from '~/components/Editor.vue';
-
+import SkuCard from './components/SkuCard.vue';
+import { 
+    goodsId,
+    initSkuCardList 
+} from '~/composables/useSku.js';
 const formDrawerRef = ref(false)
 const form = reactive({
     sku_type: 0,  //1多规格，0单规格
@@ -37,6 +39,7 @@ const open =(row)=>{
             "weight": 0,
             "volume": 0
         }
+        console.log(res);
         
         formDrawerRef.value.open()
 
@@ -108,7 +111,7 @@ defineExpose({
            </template>
 
            <template v-if="form.sku_type == 1">
-            多规格
+                <SkuCard />
            </template>
         </el-form>
     </FormDrawer>
