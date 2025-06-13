@@ -17,6 +17,7 @@ import Search from '~/components/Search.vue';
 import SearchItem from '~/components/SearchItem.vue';
 import banners from './banners.vue';
 import content from './content.vue';
+import skus from './skus.vue';
 
 // 搜索/分页 功能- 修改状态/删除
 
@@ -46,6 +47,7 @@ const {
         tableData.value = res.list.map(o => {
             o.bannersLoading = false
             o.contentLoading = false
+            o.skusLoading = false
             return o
         })
         total.value = res.totalCount
@@ -125,6 +127,13 @@ const handleSetGoodsBanners = (row)=>{bannerRef.value.open(row)}
 //设置商品详情
 const contentRef = ref(null)
 const handleSetGoodsContent = (row)=>{contentRef.value.open(row)}
+
+
+//设置商品规格
+const skusRef = ref(null)
+const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
+
+
 
 
 </script>
@@ -225,7 +234,9 @@ const handleSetGoodsContent = (row)=>{contentRef.value.open(row)}
 
                             <el-button class="px-1" type="primary" size="small" text
                                 @click="handleEdit(scope.row)">修改</el-button>
-                            <el-button class="px-1" type="primary" size="small" text>商品规格</el-button>
+
+                            <el-button class="px-1"  size="small" text
+                             :loading="scope.row.skusLoading"@click="handleSetGoodsSkus(scope.row)" >商品规格</el-button>
 
                             <el-button class="px-1" :type="scope.row.goods_banner.length == 0 ?'danger' : 'primary'" size="small"text
                              @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading" >设置轮播图</el-button>
@@ -323,6 +334,7 @@ const handleSetGoodsContent = (row)=>{contentRef.value.open(row)}
 
         <banners  ref="bannerRef" @reload-data="getData" />
         <content  ref="contentRef" @reload-data="getData" />
+        <skus  ref="skusRef" @reload-data="getData" />
     </div>
 
 </template>

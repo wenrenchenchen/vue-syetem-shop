@@ -1,5 +1,6 @@
 <script setup>
 import { remove } from 'nprogress';
+
 import { ref } from 'vue'
 
 import ImageAside from '~/components/ImageAside.vue';
@@ -8,8 +9,11 @@ import {toast} from '~/composables/util.js'
 
 
 const dialogVisible = ref(false)
-
-const open = () => dialogVisible.value = true
+const callbackFunction = ref(null)
+const open = (callback) => {
+    callbackFunction.value = callback
+    dialogVisible.value = true
+}
 const close = ()=> dialogVisible.value  = false
 
 
@@ -29,6 +33,10 @@ const props = defineProps({
     limit:{
         type:Number,
         default:1
+    },
+    preview1:{
+        tpye:Boolean,
+        default:true
     }
 })
 
@@ -45,13 +53,17 @@ const submit = () => {
     if(props.limit == 1){
         value = urls[0]
     }else {
-        value = [...props.modelValue,...urls]
+        value = props.preview1 ? [...props.modelValue,...urls] : [...urls]
         if(value.length > props.limit){
-            return toast("最多还能选择"+(props.limit - props.modelValue.length) + "张")
+            let limit = props.preview1 ? (props.limit - props.modelValue.length) : props.limit
+            return toast("最多还能选择"+ limit + "张")
         }
     }
-    if(value){
+    if(value && props.preview1){
         emit("update:modelValue",value)
+    }
+    if(!props.preview1 && typeof callbackFunction.value === "function"){
+        callbackFunction.value(value)
     }
     close()
 }
@@ -60,10 +72,14 @@ const removeImage =(url)=>{
      emit("update:modelValue",props.modelValue.filter(u=>u != url))
     
 }
+
+defineExpose({
+    open
+})
 </script>
 <template>
     
-    <div v-if="modelValue">
+    <div v-if="modelValue && preview1">
         <el-image v-if="typeof modelValue == 'string'" :src="modelValue" fit="cover" class="w-[100px] h-[100px] rounded border mr-2 "></el-image>
         <div v-else class="flex flex-wrap">
             <div  class="relative mx-1 mb-2 w-[100px] h-[100px]" v-for="(url,index) in modelValue" :key="index">
@@ -74,7 +90,7 @@ const removeImage =(url)=>{
         </div>
     </div>
 
-    <div class="choose-image-btn" @click="open()">
+    <div v-if="preview1" class="choose-image-btn" @click="open()">
         <el-icon :size="25" class="text-gray-500">
             <Plus />
         </el-icon>
