@@ -235,7 +235,7 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                             <el-button class="px-1" type="primary" size="small" text
                                 @click="handleEdit(scope.row)">修改</el-button>
 
-                            <el-button class="px-1"  size="small" text
+                            <el-button class="px-1"  size="small" text type="primary"
                              :loading="scope.row.skusLoading"@click="handleSetGoodsSkus(scope.row)" >商品规格</el-button>
 
                             <el-button class="px-1" :type="scope.row.goods_banner.length == 0 ?'danger' : 'primary'" size="small"text

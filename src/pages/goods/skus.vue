@@ -26,7 +26,7 @@ const form = reactive({
 })
 
 
-const goodsId = ref(0)
+
 const open =(row)=>{
     goodsId.value = row.id
     row.skusLoading = true
@@ -39,8 +39,7 @@ const open =(row)=>{
             "weight": 0,
             "volume": 0
         }
-        console.log(res);
-        
+        initSkuCardList(res)        
         formDrawerRef.value.open()
 
     })

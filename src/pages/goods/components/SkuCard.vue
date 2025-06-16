@@ -1,14 +1,20 @@
 <script setup>
 import SkuCardItem from './SkuCardItem.vue';
+import {
+    sku_card_list,
+    addSkuCardEvent,
+    btnLoading
+}from '~/composables/useSku.js'
+
 </script>
 <template>
     <el-form-item label="规格选项" >
-        <el-card shadow="never" class="w-full mb-3">
+        <el-card shadow="never" class="w-full mb-3" v-for="(item,index) in sku_card_list" :key="item.id">
             <!-- 头 -->
             <template #header>
             <div class="flex items-center">
                 <!-- 左边 -->
-                <el-input  placeholder="规格名称" style="width: 200px;">
+                <el-input v-model="item.text" placeholder="规格名称" style="width: 200px;">
                     <template #append>
                         <el-icon>
                             <more />
@@ -24,9 +30,9 @@ import SkuCardItem from './SkuCardItem.vue';
             </template>
             
             <!-- 内容 -->
-            <SkuCardItem />
+            <SkuCardItem :skuCardId="item.id" />
         </el-card>
-        <el-button type="success" size="small" @click="">添加规格</el-button>
+        <el-button :loading="btnLoading" type="success" size="small" @click="addSkuCardEvent">添加规格</el-button>
         
     </el-form-item>
 </template>
