@@ -42,3 +42,6 @@ export function updateGoodsSkus(id,data){
 export function createGoodsSkusCard(data){
     return axios.post("/admin/goods_skus_card",data)
 }
+export function updateGoodsSkusCard(id,data){
+    return axios.post(`/admin/goods_skus_card/${id}`,data)
+}
