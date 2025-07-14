@@ -4,6 +4,10 @@ import {
     updateGoodsSkusCard,
     deleteGoodsSkusCard
 } from "~/api/goods";
+import {
+    useArrayMoveUp,
+    useArrayMoveDown
+} from "~/composables/util"
 
 // 当前商品ID
 export const goodsId = ref(0)
@@ -84,6 +88,17 @@ export function handleDelete(item){
     })
 
 }
+
+// 排序规格选项 上移和下移
+export function sortCard(action,index){
+    if(action == "up"){
+        useArrayMoveUp(sku_card_list.value,index)
+    }
+    if(action == "down"){
+        useArrayMoveDown(sku_card_list.value,index)
+    }
+}
+
 
 //初始化规格值
 export function initSkusCardItem(id){
