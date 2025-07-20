@@ -54,3 +54,6 @@ export function sortGoodsSkusCard(data){
 export function createGoodsSkusCardValue(data){
     return axios.post(`/admin/goods_skus_card_value`,data)
 }
+export function updateGoodsSkusCardValue(id,data){
+    return axios.post(`/admin/goods_skus_card_value/${id}`,data)
+}
