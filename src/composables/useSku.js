@@ -6,7 +6,8 @@ import {
     sortGoodsSkusCard,
     createGoodsSkusCardValue,
     updateGoodsSkusCardValue,
-    deleteGoodsSkusCardValue
+    deleteGoodsSkusCardValue,
+    chooseAndSetGoodsSkuCard
 } from "~/api/goods";
 import {
     useArrayMoveUp,
@@ -19,7 +20,7 @@ export const goodsId = ref(0)
 
 // 规格选项列表
 export const sku_card_list = ref([])
-
+const loading = ref(false)
 
 //初始化规格选项列表
 export function initSkuCardList(d) {
@@ -125,6 +126,22 @@ export function sortCard(action, index) {
         })
 }
 
+// 选择设置规格
+export function handleChooseSetGoodsSkusCard(id,data){
+    let item = sku_card_list.value.find(o=>o.id == id) 
+    item.loading = true
+    chooseAndSetGoodsSkuCard(id,data)
+    .then(res=>{
+        item.name = item.text = res.goods_skus_card.name
+        item.goodsSkusCardValue = res.goods_skus_card_value.map(o=>{
+            o.text = o.value || "属性值"
+            return o 
+        })
+    })
+    .finally(()=>{
+        item.loading = false
+    })
+}
 
 //初始化规格值
 export function initSkusCardItem(id) {
@@ -134,7 +151,7 @@ export function initSkusCardItem(id) {
 
     const inputVisible = ref(false)
     const InputRef = ref()
-    const loading = ref(false)
+    
     const handleClose = (tag) => {
         loading.value = true
         deleteGoodsSkusCardValue(tag.id)
@@ -210,7 +227,8 @@ export function initSkusCardItem(id) {
         showInput,
         handleInputConfirm,
         loading,
-        handleChange
+        handleChange,
+        handleChooseSetGoodsSkusCard
 
     }
 }
