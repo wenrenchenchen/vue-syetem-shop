@@ -1,10 +1,10 @@
-import { id } from "element-plus/es/locales.mjs";
-import { ref } from "vue";
+import { ref,nextTick } from "vue";
 import {
     createGoodsSkusCard,
     updateGoodsSkusCard,
     deleteGoodsSkusCard,
-    sortGoodsSkusCard
+    sortGoodsSkusCard,
+    createGoodsSkusCardValue
 } from "~/api/goods";
 import {
     useArrayMoveUp,
@@ -143,13 +143,31 @@ export function initSkusCardItem(id) {
             InputRef.value.input.focus()
         })
     }
-
+    const loading = ref(false)
     const handleInputConfirm = () => {
-        if (inputValue.value) {
-            dynamicTags.value.push(inputValue.value)
+        if(!inputValue.value){
+            inputVisible.value = false
+            return 
         }
-        inputVisible.value = false
-        inputValue.value = ''
+        loading.value = true
+        createGoodsSkusCardValue({
+            goods_skus_card_id:id,
+            name:item.name,
+            order:50,
+            value:inputValue.value
+        })
+        .then(res => {
+            item.goodsSkusCardValue.push({
+                ...res,
+                text:res.value
+            })
+        })
+        .finally(()=>{
+            inputVisible.value = false
+            inputValue.value = ''
+            loading.value = false
+        })
+
     }
 
     return {
@@ -159,7 +177,8 @@ export function initSkusCardItem(id) {
         InputRef,
         handleClose,
         showInput,
-        handleInputConfirm
+        handleInputConfirm,
+        loading
 
     }
 }
