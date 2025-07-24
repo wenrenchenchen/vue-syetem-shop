@@ -235,8 +235,12 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                             <el-button class="px-1" type="primary" size="small" text
                                 @click="handleEdit(scope.row)">修改</el-button>
 
-                            <el-button class="px-1"  size="small" text type="primary"
-                             :loading="scope.row.skusLoading"@click="handleSetGoodsSkus(scope.row)" >商品规格</el-button>
+                            <el-button class="px-1"  
+                            size="small" 
+                            text :type="(scope.row.sku_type == 0 && !scope.row.sku_value) || 
+                            (scope.row.sku_type == 1 && !scope.row.goods_skus.length) ? 'danger' : 'primary'"
+                             :loading="scope.row.skusLoading"@click="handleSetGoodsSkus(scope.row)" 
+                             >商品规格</el-button>
 
                             <el-button class="px-1" :type="scope.row.goods_banner.length == 0 ?'danger' : 'primary'" size="small"text
                              @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading" >设置轮播图</el-button>
