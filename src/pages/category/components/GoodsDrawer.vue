@@ -5,7 +5,11 @@ import FormDrawer from '~/components/FormDrawer.vue';
 import {
     getCategoryGoods,
     deleteCategoryGoods,
+    connectCategoryGoods
 } from '~/api/category.js';
+
+import ChooseGoods from '~/components/ChooseGoods.vue';
+
 const formDrawerRef = ref(null);
 const category_id = ref(0);
 const tableData = ref([]);
@@ -44,13 +48,32 @@ const handleDelete = (row) => {
 
 }
 
+const ChooseGoodsRef = ref(null)
+
+const handleConnet = () => {
+    formDrawerRef.value.showLoading()
+    ChooseGoodsRef.value.open((goods_ids)=>{
+        connectCategoryGoods({
+            category_id:category_id.value,
+            goods_ids
+        })
+        .then(res=>{
+            getData()
+            toast("关联成功")
+        })
+        .finally(()=>{
+            formDrawerRef.value.hideLoading()
+        })
+        
+    })
+}   
 defineExpose({
     open,
 })
 
 </script>
 <template>
-    <FormDrawer ref="formDrawerRef" title="推荐商品">
+    <FormDrawer ref="formDrawerRef" consfirmText="关联" title="推荐商品" @submit="handleConnet">
         <el-table :data="tableData" border stripe style="width: 100%;">
             <el-table-column prop="goods_id" label="ID" width="60" />
             <el-table-column label="商品封面" width="180">
@@ -78,4 +101,8 @@ defineExpose({
         </el-table>
 
     </FormDrawer>
+
+    <ChooseGoods ref="ChooseGoodsRef">
+
+    </ChooseGoods>
 </template>
