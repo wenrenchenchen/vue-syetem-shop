@@ -9,7 +9,8 @@ import {
     createGoods,
     updateGoods,
     deleteGoods,
-    restoreGoods
+    restoreGoods,
+    destroyGoods
 } from '~/api/goods';
 import { getCategoryList } from '~/api/category';
 import ChooseImage from '~/components/ChooseImage.vue'
@@ -135,13 +136,17 @@ const handleSetGoodsContent = (row) => { contentRef.value.open(row) }
 const skusRef = ref(null)
 const handleSetGoodsSkus = (row) => { skusRef.value.open(row) }
 
-const handleRestoreGoods = () => {
+// 恢复商品
+const handleRestoreGoods = () => useMultiAction(restoreGoods,'恢复')
+//彻底删除
+const handleDestoryGoods = () => useMultiAction(destroyGoods,'彻底删除')
 
-    
+// 彻底删除and恢复
+function useMultiAction(func,msg) {
     loading.value = true
-    restoreGoods(multiSelectionIds.value)
+    func(multiSelectionIds.value)
         .then(res => {
-            toast("恢复成功")
+            toast(msg + '成功')
             // 清空选中
             if (multipleTableRef.value) {
                 multipleTableRef.value.clearSelection()
@@ -153,7 +158,6 @@ const handleRestoreGoods = () => {
 
         })
 }
-
 
 </script>
 
@@ -189,14 +193,23 @@ const handleRestoreGoods = () => {
 
             <!-- 新增/刷新按钮 -->
             <ListHeader layout="create,refresh" @delete="handleMultiDelete" @create="handleCreate" @refresh="getData">
+
+                <el-button type="danger" size="small" @click="handleMultiDelete"
+                    v-if="searchForm.tab !== 'delete'">批量删除</el-button>
+
+                <el-button type="warning" size="small" @click="handleRestoreGoods"
+                    v-if="searchForm.tab == 'delete'">恢复商品</el-button>
+                <el-popconfirm v-if="searchForm.tab == 'delete'" title="是否彻底删除所选商品?" confirm-button-text="确认" cancel-button-text="取消"
+                    @confirm="handleDestoryGoods">
+                    <template #reference>
+                        <el-button type="danger" size="small" >彻底删除</el-button>
+                    </template>
+                </el-popconfirm>
+
                 <el-button size="small" @click="handleMultiStatusChange(1)"
                     v-if="searchForm.tab == 'all' || searchForm.tab == 'off'">上架</el-button>
                 <el-button size="small" @click="handleMultiStatusChange(0)"
                     v-if="searchForm.tab == 'all' || searchForm.tab == 'saling'">下架</el-button>
-                <el-button type="danger" size="small" @click="handleMultiDelete"
-                    v-if="searchForm.tab !== 'delete'">批量删除</el-button>
-                <el-button type="warning" size="small" @click="handleRestoreGoods" v-else>恢复商品</el-button>
-
             </ListHeader>
 
 
