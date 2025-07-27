@@ -2,13 +2,14 @@
 import { ref } from 'vue';
 import FormDrawer from '~/components/FormDrawer.vue'
 import ListHeader from '~/components/ListHeader.vue'
-
+import { toast } from '~/composables/util'
 import {
     getGoodsList,
     updateGoodsStatus,
     createGoods,
     updateGoods,
     deleteGoods,
+    restoreGoods
 } from '~/api/goods';
 import { getCategoryList } from '~/api/category';
 import ChooseImage from '~/components/ChooseImage.vue'
@@ -36,6 +37,7 @@ const {
     getData,
     handleDelete,
     handleMultiStatusChange,
+    multiSelectionIds
 } = useInitTable({
     searchForm: {
         title: "",
@@ -59,7 +61,7 @@ const {
 
 // 新增/修改
 const {
-    
+
     drawerTitle,
     formDrawerRef,
     formRef,
@@ -71,23 +73,23 @@ const {
 
 } = useInitForm({
     form: {
-        title:null,	    //商品名称 		
-        category_id:null,   //商品分类
-        cover:null, //商品封面
-        desc:null,   //商品描述
-        unit:"件",  //商品单位
-        stock:100,  //总库存
-        min_stock:10,   //库存预警
-        status:1,   //是否上架
-        stock_display:1,    //库存显示
-        min_price:0,    //最低销售价
-        min_oprice:0    //最低原价
+        title: null,	    //商品名称 		
+        category_id: null,   //商品分类
+        cover: null, //商品封面
+        desc: null,   //商品描述
+        unit: "件",  //商品单位
+        stock: 100,  //总库存
+        min_stock: 10,   //库存预警
+        status: 1,   //是否上架
+        stock_display: 1,    //库存显示
+        min_price: 0,    //最低销售价
+        min_oprice: 0    //最低原价
     },
-        rules: {
-        },
-        getData,
-        update: updateGoods,
-        create: createGoods,
+    rules: {
+    },
+    getData,
+    update: updateGoods,
+    create: createGoods,
 
 
 })
@@ -121,19 +123,36 @@ const showSearch = ref(false)
 
 //设置轮播图
 const bannerRef = ref(null)
-const handleSetGoodsBanners = (row)=>{bannerRef.value.open(row)}
+const handleSetGoodsBanners = (row) => { bannerRef.value.open(row) }
 
 
 //设置商品详情
 const contentRef = ref(null)
-const handleSetGoodsContent = (row)=>{contentRef.value.open(row)}
+const handleSetGoodsContent = (row) => { contentRef.value.open(row) }
 
 
 //设置商品规格
 const skusRef = ref(null)
-const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
+const handleSetGoodsSkus = (row) => { skusRef.value.open(row) }
 
+const handleRestoreGoods = () => {
 
+    
+    loading.value = true
+    restoreGoods(multiSelectionIds.value)
+        .then(res => {
+            toast("恢复成功")
+            // 清空选中
+            if (multipleTableRef.value) {
+                multipleTableRef.value.clearSelection()
+            }
+            getData()
+        })
+        .finally(() => {
+            loading.value = false
+
+        })
+}
 
 
 </script>
@@ -141,7 +160,8 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
 <template>
     <div>
         <el-tabs v-model="searchForm.tab" class="mb-4 custom-tabs" @tab-change="getData">
-            <el-tab-pane :label="item.name" :name="item.key" v-for="(item, index) in tabbars" :key="index"></el-tab-pane>
+            <el-tab-pane :label="item.name" :name="item.key" v-for="(item, index) in tabbars"
+                :key="index"></el-tab-pane>
 
         </el-tabs>
 
@@ -155,10 +175,9 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                 <template #show>
                     <SearchItem label="商品分类">
                         <el-select v-model="searchForm.category_id" placeholder="请选择商品分类" clearable>
-                            <el-option v-for="item in category_list" :key="item.id" :label="item.name"
-                                :value="item.id">
+                            <el-option v-for="item in category_list" :key="item.id" :label="item.name" :value="item.id">
                             </el-option>
-                        </el-select>    
+                        </el-select>
                     </SearchItem>
 
 
@@ -169,16 +188,22 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
 
 
             <!-- 新增/刷新按钮 -->
-            <ListHeader layout="create,delete,refresh" @delete="handleMultiDelete" @create="handleCreate" @refresh="getData" >
-                <el-button  size="small" @click="handleMultiStatusChange(1)" v-if="searchForm.tab=='all' || searchForm.tab =='off'">上架</el-button>
-                <el-button  size="small" @click="handleMultiStatusChange(0)" v-if="searchForm.tab=='all' || searchForm.tab =='saling'">下架</el-button>
-                
+            <ListHeader layout="create,refresh" @delete="handleMultiDelete" @create="handleCreate" @refresh="getData">
+                <el-button size="small" @click="handleMultiStatusChange(1)"
+                    v-if="searchForm.tab == 'all' || searchForm.tab == 'off'">上架</el-button>
+                <el-button size="small" @click="handleMultiStatusChange(0)"
+                    v-if="searchForm.tab == 'all' || searchForm.tab == 'saling'">下架</el-button>
+                <el-button type="danger" size="small" @click="handleMultiDelete"
+                    v-if="searchForm.tab !== 'delete'">批量删除</el-button>
+                <el-button type="warning" size="small" @click="handleRestoreGoods" v-else>恢复商品</el-button>
+
             </ListHeader>
-                
 
-            <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe style="width: 100%" v-loading="loading">
 
-                <el-table-column type="selection"  width="55" />
+            <el-table ref="multipleTableRef" @selection-change="handleSelectionChange" :data="tableData" stripe
+                style="width: 100%" v-loading="loading">
+
+                <el-table-column type="selection" width="55" />
                 <el-table-column label="商品" width="300">
                     <template #default="{ row }">
                         <div class="flex ">
@@ -211,7 +236,7 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                 <el-table-column label="商品状态" width="100">
                     <template #default="{ row }">
                         <el-tag :type="row.status ? 'success' : 'danger'" size="small">{{ row.status ? '上架' :
-                            '仓库'}}</el-tag>
+                            '仓库' }}</el-tag>
                     </template>
                 </el-table-column>
 
@@ -235,21 +260,20 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                             <el-button class="px-1" type="primary" size="small" text
                                 @click="handleEdit(scope.row)">修改</el-button>
 
-                            <el-button class="px-1"  
-                            size="small" 
-                            text :type="(scope.row.sku_type == 0 && !scope.row.sku_value) || 
-                            (scope.row.sku_type == 1 && !scope.row.goods_skus.length) ? 'danger' : 'primary'"
-                             :loading="scope.row.skusLoading"@click="handleSetGoodsSkus(scope.row)" 
-                             >商品规格</el-button>
+                            <el-button class="px-1" size="small" text :type="(scope.row.sku_type == 0 && !scope.row.sku_value) ||
+                                (scope.row.sku_type == 1 && !scope.row.goods_skus.length) ? 'danger' : 'primary'"
+                                :loading="scope.row.skusLoading" @click="handleSetGoodsSkus(scope.row)">商品规格</el-button>
 
-                            <el-button class="px-1" :type="scope.row.goods_banner.length == 0 ?'danger' : 'primary'" size="small"text
-                             @click="handleSetGoodsBanners(scope.row)" :loading="scope.row.bannersLoading" >设置轮播图</el-button>
+                            <el-button class="px-1" :type="scope.row.goods_banner.length == 0 ? 'danger' : 'primary'"
+                                size="small" text @click="handleSetGoodsBanners(scope.row)"
+                                :loading="scope.row.bannersLoading">设置轮播图</el-button>
 
-                            <el-button class="px-1" :type="!(scope.row.content) ? 'danger' : 'primary'" size="small" text
-                             @click="handleSetGoodsContent(scope.row)" :loading="scope.row.contentLoading">商品详情</el-button>
+                            <el-button class="px-1" :type="!(scope.row.content) ? 'danger' : 'primary'" size="small"
+                                text @click="handleSetGoodsContent(scope.row)"
+                                :loading="scope.row.contentLoading">商品详情</el-button>
 
                             <el-popconfirm title="是否要删除该商品" confirm-button-text="确认" cancel-button-text="取消"
-                                @confirm="handleDelete(scope.row.id)">
+                                @confirm="handleDelete([scope.row.id])">
                                 <template #reference>
                                     <el-button class="px-1" text type="primary" size="small">
                                         删除
@@ -275,7 +299,7 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                     <el-form-item label="商品名称" prop="title">
                         <el-input v-model="form.title" placeholder="请输入商品名称"></el-input>
                     </el-form-item>
-                    
+
                     <el-form-item label="封面" prop="cover">
                         <!-- 图片 -->
                         <ChooseImage v-model="form.cover" />
@@ -293,30 +317,30 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                     </el-form-item>
 
                     <el-form-item label="单位" prop="unit">
-                        <el-input v-model="form.unit"  placeholder="请输入单位"  style="width: 50%;"></el-input>
+                        <el-input v-model="form.unit" placeholder="请输入单位" style="width: 50%;"></el-input>
                     </el-form-item>
 
                     <el-form-item label="总库存" prop="stock">
-                         <el-input v-model="form.stock" type="number" style="width: 40%;">
+                        <el-input v-model="form.stock" type="number" style="width: 40%;">
                             <template #append>件</template>
-                         </el-input>
+                        </el-input>
                     </el-form-item>
                     <el-form-item label="库存预警" prop="min_stock">
-                         <el-input v-model="form.min_stock" type="number" style="width: 40%;">
+                        <el-input v-model="form.min_stock" type="number" style="width: 40%;">
                             <template #append>件</template>
-                         </el-input>
+                        </el-input>
                     </el-form-item>
                     <el-form-item label="最低销售价" prop="min_price">
-                         <el-input v-model="form.min_price" type="number" style="width: 40%;">
+                        <el-input v-model="form.min_price" type="number" style="width: 40%;">
                             <template #append>元</template>
-                         </el-input>
+                        </el-input>
                     </el-form-item>
                     <el-form-item label="最低原价" prop="min_oprice">
-                         <el-input v-model="form.min_oprice" type="number" style="width: 40%;">
+                        <el-input v-model="form.min_oprice" type="number" style="width: 40%;">
                             <template #append>元</template>
-                         </el-input>
+                        </el-input>
                     </el-form-item>
-                    
+
                     <el-form-item label="库存显示" prop="stock_display">
                         <el-radio-group v-model="form.stock_display">
                             <el-radio :value="0">隐藏</el-radio>
@@ -330,15 +354,15 @@ const handleSetGoodsSkus = (row)=>{skusRef.value.open(row)}
                         </el-radio-group>
                     </el-form-item>
 
-                    
+
                 </el-form>
             </FormDrawer>
         </el-card>
 
 
-        <banners  ref="bannerRef" @reload-data="getData" />
-        <content  ref="contentRef" @reload-data="getData" />
-        <skus  ref="skusRef" @reload-data="getData" />
+        <banners ref="bannerRef" @reload-data="getData" />
+        <content ref="contentRef" @reload-data="getData" />
+        <skus ref="skusRef" @reload-data="getData" />
     </div>
 
 </template>
