@@ -7,7 +7,7 @@ import {
 
 } from '~/api/goods_comment.js';
 import ChooseImage from '~/components/ChooseImage.vue'
-import { useInitTable} from '~/composables/useCommon.js';
+import { useInitTable } from '~/composables/useCommon.js';
 import Search from '~/components/Search.vue';
 import SearchItem from '~/components/SearchItem.vue';
 
@@ -56,67 +56,45 @@ const {
             <SearchItem label="关键词">
                 <el-input v-model="searchForm.title" placeholder="商品标题" clearable></el-input>
             </SearchItem>
-
-
         </Search>
 
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-            <el-table-column label="会员" width="200">
+            <el-table-column label="ID" width="70" align="center" prop="id"></el-table-column>
+            <el-table-column label="商品" width="200">
                 <template #default="{ row }">
                     <div class="flex items-center">
-                        <!-- 头像 -->
-                        <el-avatar :size="40" :src="row.avatar">
-                            <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png" />
-                        </el-avatar>
+                        <el-image :src="row.goods_item ? row.goods_item.cover : ''" fit="fill" :lazy="true"
+                            style="width: 50px;height: 50px;" class="rounded"></el-image>
                         <!-- id -->
                         <div class="ml-3">
-                            <h6>{{ row.username }}</h6>
-                            <small>ID:{{ row.id }}</small>
+                            <h6>{{ row.goods_item?.title ?? '商品已被删除' }}</h6>
                         </div>
                     </div>
 
                 </template>
             </el-table-column>
 
-            <el-table-column label="会员等级" align="center">
+            <el-table-column label="评价信息" width="200">
                 <template #default="{ row }">
-                    {{ row.user_level?.name || "-" }}
-                </template>
-            </el-table-column>
-            <el-table-column label="登录注册" align="center">
-                <template #default="{ row }">
-                    <p v-if="row.last_login_time">
-                        最后登录 : {{ row.last_login_time }}
-                    </p>
+                    <p>用户 : {{ row.user.nickname || row.user.username }}</p>
                     <p>
-                        注册时间 : {{ row.create_time }}
+                        <el-rate 
+                        v-model="row.rating" 
+                        disabled 
+                        show-score 
+                        text-color="#ff9900"/>
                     </p>
-
                 </template>
             </el-table-column>
 
-            <el-table-column label="状态" width="100">
+            <el-table-column label="评价时间" width="180" align="center" prop="review_time"></el-table-column>
+
+            <el-table-column label="状态" >
                 <template #default="{ row }">
                     <el-switch :modelValue="row.status" :active-value="1" :inactive-value="0"
                         @change="handleStatusChange($event, row)" :disabled="row.super == 1"
                         :loading="row.statusLoading">
                     </el-switch>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" width="180" align="center">
-                <template #default="scope">
-                    <small v-if="scope.row.super == 1" class="text-sm text-gray-500">暂无操作</small>
-                    <div v-else>
-                        <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
-                        <el-popconfirm title="是否要删除该记录" confirm-button-text="确认" cancel-button-text="取消"
-                            @confirm="handleDelete(scope.row.id)">
-                            <template #reference>
-                                <el-button class="px-1" text type="primary" size="small">
-                                    删除
-                                </el-button>
-                            </template>
-                        </el-popconfirm>
-                    </div>
                 </template>
             </el-table-column>
         </el-table>
