@@ -59,6 +59,38 @@ const {
         </Search>
 
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
+             <el-table-column type="expand">
+                <template #default="{ row }">
+                    <div class="flex pl-18" >
+                        <!-- 头像 -->
+                        <el-avatar :size="50" shape="circle" :src="row.user.avatar" fit="fill" class="mr-3"></el-avatar>
+                        <div class="flex-1">
+                            <h6 class="flex items-center">
+                                {{ row.user.nickname || row.user.username }}
+                                <small class="text-gray-400 ml-2">{{ row.review_time }}</small>
+                                <el-button  size="small" class="ml-auto">回复</el-button>
+                            </h6>
+                            {{ row.review_data }}
+                            <div class="py-2">
+                                <el-image v-for="(item,index) in row.review.image" :key="index" 
+                                :src="item" fit="cover" :lazy="true" style="width: 100px;height:100px" class="rounded"></el-image>
+                            </div>
+
+                            <div class="mt-3 bg-gray-100 p-3 rounded" v-for="(item,index) in row.review.extra" :key="index">
+                                <h6 class="flex font-bold">
+                                    客服
+                                    <el-button type="info" size="small" >修改</el-button>
+                                </h6>
+                                <p>{{ item.data }}</p>
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </template>
+             </el-table-column>
+
+
             <el-table-column label="ID" width="70" align="center" prop="id"></el-table-column>
             <el-table-column label="商品" width="200">
                 <template #default="{ row }">
