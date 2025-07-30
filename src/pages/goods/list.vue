@@ -43,7 +43,10 @@ const {
     searchForm: {
         title: "",
         tab: "all",
-        category_id: null,
+        starttime: "",
+        endtime:"",
+        name:"",
+        phone:""
     },
     getList: getGoodsList,
     onGetListSuccess: (res) => {
@@ -60,40 +63,7 @@ const {
     delete: deleteGoods
 })
 
-// 新增/修改
-const {
 
-    drawerTitle,
-    formDrawerRef,
-    formRef,
-    form,
-    rules,
-    handleSubmit,
-    handleCreate,
-    handleEdit,
-
-} = useInitForm({
-    form: {
-        title: null,	    //商品名称 		
-        category_id: null,   //商品分类
-        cover: null, //商品封面
-        desc: null,   //商品描述
-        unit: "件",  //商品单位
-        stock: 100,  //总库存
-        min_stock: 10,   //库存预警
-        status: 1,   //是否上架
-        stock_display: 1,    //库存显示
-        min_price: 0,    //最低销售价
-        min_oprice: 0    //最低原价
-    },
-    rules: {
-    },
-    getData,
-    update: updateGoods,
-    create: createGoods,
-
-
-})
 
 // 订单类型
 const tabbars = [{
@@ -172,8 +142,8 @@ function useMultiAction(func,msg) {
         <el-card shadow="never" class="border-0">
             <!-- 搜索 -->
             <Search :model="searchForm" @search="getData" @reset="resetSearchForm">
-                <SearchItem label="关键词">
-                    <el-input v-model="searchForm.title" placeholder="商品名称" clearable></el-input>
+                <SearchItem label="订单编号">
+                    <el-input v-model="searchForm.no" placeholder="订单编号" clearable></el-input>
                 </SearchItem>
 
                 <template #show>
