@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue';
-
+import { toast } from '~/composables/util'
 import {
     getGoodsCommentList,
     updateGoodsCommentStatus,
-
+    reviewGoodsComment
 } from '~/api/goods_comment.js';
 import ChooseImage from '~/components/ChooseImage.vue'
 import { useInitTable } from '~/composables/useCommon.js';
@@ -34,6 +34,7 @@ const {
     onGetListSuccess: (res) => {
         tableData.value = res.list.map(o => {
             o.statusLoading = false
+            o.textareaEdit = false
             return o
         })
         total.value = res.totalCount
@@ -45,8 +46,26 @@ const {
 
 
 
+const textarea = ref("")
 
 
+const openTextarea = (row,data="") => {
+    textarea.value = data
+    row.textareaEdit = true
+}
+ 
+const review = (row) =>{
+    if(!textarea.value){
+        return toast("回复内容不能为空","error")
+    }
+    reviewGoodsComment(row.id,textarea.value)
+    .then(res=>{
+        toast("回复成功")
+        row.textareaEdit = false
+        getData
+
+    })
+} 
 </script>
 
 <template>
@@ -58,37 +77,52 @@ const {
             </SearchItem>
         </Search>
 
-        <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-             <el-table-column type="expand">
+        <el-table default-expand-all :data="tableData" stripe style="width: 100%" v-loading="loading">
+            <el-table-column type="expand">
                 <template #default="{ row }">
-                    <div class="flex pl-18" >
+                    <div class="flex pl-18">
                         <!-- 头像 -->
                         <el-avatar :size="50" shape="circle" :src="row.user.avatar" fit="fill" class="mr-3"></el-avatar>
                         <div class="flex-1">
                             <h6 class="flex items-center">
                                 {{ row.user.nickname || row.user.username }}
                                 <small class="text-gray-400 ml-2">{{ row.review_time }}</small>
-                                <el-button  size="small" class="ml-auto">回复</el-button>
+                                <el-button size="small" class="ml-auto" @click="openTextarea(row)"
+                                    v-if="!row.textareaEdit && !row.extra">回复</el-button>
                             </h6>
                             {{ row.review_data }}
                             <div class="py-2">
-                                <el-image v-for="(item,index) in row.review.image" :key="index" 
-                                :src="item" fit="cover" :lazy="true" style="width: 100px;height:100px" class="rounded"></el-image>
+                                <el-image v-for="(item, index) in row.review.image" :key="index" :src="item" fit="cover"
+                                    :lazy="true" style="width: 100px;height:100px" class="rounded"></el-image>
                             </div>
 
-                            <div class="mt-3 bg-gray-100 p-3 rounded" v-for="(item,index) in row.review.extra" :key="index">
-                                <h6 class="flex font-bold">
-                                    客服
-                                    <el-button type="info" size="small" >修改</el-button>
-                                </h6>
-                                <p>{{ item.data }}</p>
-                                
+
+
+                            <!-- 回复用户评论 -->
+                            <div v-if="row.textareaEdit">
+                                <el-input v-model="textarea" placeholder="请输入评价内容" type="textarea" :rows="2"></el-input>
+                                <div class="py-2">
+                                    <el-button type="primary" size="small" @click="review(row)">回复</el-button>
+                                    <el-button size="small" class="ml-2" @click="row.textareaEdit = false">取消</el-button>
+                                </div>
                             </div>
 
+                            <template v-else>
+                                <div>
+                                    <div class="mt-3 bg-gray-100 p-3 rounded" v-for="(item, index) in row.review.extra"
+                                        :key="index">
+                                        <h6 class="flex font-bold">
+                                            客服
+                                            <el-button type="info" size="small" @click="openTextarea(row,tiem.data)">修改</el-button>
+                                        </h6>
+                                        <p>{{ item.data }}</p>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </template>
-             </el-table-column>
+            </el-table-column>
 
 
             <el-table-column label="ID" width="70" align="center" prop="id"></el-table-column>
@@ -110,18 +144,14 @@ const {
                 <template #default="{ row }">
                     <p>用户 : {{ row.user.nickname || row.user.username }}</p>
                     <p>
-                        <el-rate 
-                        v-model="row.rating" 
-                        disabled 
-                        show-score 
-                        text-color="#ff9900"/>
+                        <el-rate v-model="row.rating" disabled show-score text-color="#ff9900" />
                     </p>
                 </template>
             </el-table-column>
 
             <el-table-column label="评价时间" width="180" align="center" prop="review_time"></el-table-column>
 
-            <el-table-column label="状态" >
+            <el-table-column label="状态">
                 <template #default="{ row }">
                     <el-switch :modelValue="row.status" :active-value="1" :inactive-value="0"
                         @change="handleStatusChange($event, row)" :disabled="row.super == 1"

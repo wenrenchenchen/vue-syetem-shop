@@ -12,3 +12,6 @@ export function updateGoodsCommentStatus(id, status) {
         status
     })
 }
+export function reviewGoodsComment(id, data) {
+    return axios.post(`/admin/goods_comment/review/${id}`,{ data})
+}
