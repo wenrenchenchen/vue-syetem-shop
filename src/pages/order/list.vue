@@ -1,17 +1,15 @@
 <script setup>
 import { ref } from 'vue';
-
 import ListHeader from '~/components/ListHeader.vue'
-
 import {
     getOrderList,
     deleteOrder,
-
 } from '~/api/order.js';
-
+import ExportExcel from './ExportExcel.vue';
 import { useInitTable, } from '~/composables/useCommon.js';
 import Search from '~/components/Search.vue';
 import SearchItem from '~/components/SearchItem.vue';
+
 
 
 // 搜索/分页 功能- 修改状态/删除
@@ -83,6 +81,12 @@ const tabbars = [{
 },
 ]
 
+const ExportExcelRef = ref(null)
+const handleExportExcel = () => {
+    ExportExcelRef.value.open()
+    
+}
+
 </script>
 
 <template>
@@ -125,8 +129,11 @@ const tabbars = [{
                     </SearchItem>
                 </template>
             </Search>
+
+
+
             <!-- 批量删除按钮 -->
-            <ListHeader layout="">
+            <ListHeader layout="refresh,download" @refresh="getData" @download="handleExportExcel">
 
                 <el-button type="danger" size="small" @click="handleMultiDelete">批量删除</el-button>
 
@@ -217,14 +224,9 @@ const tabbars = [{
                 <el-pagination background layout="prev,pager,next" :total="total" :current-page="currentPage"
                     :page-size="limit" @current-change="getData" />
             </div>
-
-
-
         </el-card>
-
-
     </div>
-
+    <ExportExcel :tabs="tabbars" ref="ExportExcelRef"></ExportExcel>
 </template>
 
 <style>
