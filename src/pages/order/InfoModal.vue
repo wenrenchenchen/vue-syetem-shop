@@ -30,6 +30,13 @@
                 </el-form-item>
                 <el-form-item label="运单号">
                     {{ info.ship_data.express_no }}
+                    <el-button 
+                    type="primary" 
+                    text size="small" 
+                    class="ml-3" 
+                    @click="openShipInfoModal(info.id)"
+                    :loading="loading">查看物流</el-button>
+                    
                 </el-form-item>
                 <el-form-item label="发货时间">
                     {{ ship_time     }}
@@ -67,12 +74,11 @@
 
         <el-card shadow="never" v-if="info.address" class="mb-3">
             <template #header>
-                <b class="text-sm">收获信息</b>
+                <b class="text-sm">收货信息</b>
             </template>
             <el-form label-width="80px" >
                 <el-form-item label="收货人">
                     {{ info.address.name }}
-                    
                 </el-form-item>
                 <el-form-item label="联系方式">
                     {{ info.address.phone }}
@@ -83,7 +89,7 @@
 
             </el-form>
         </el-card>
-        <el-card v-if="refund_status != 'applied'" shadow="never" class="mb-3" >
+        <el-card v-if="info.refund_status != 'pending'" shadow="never" class="mb-3" >
             <template #header>
                 <b class="text-sm">退款信息</b>
                 <el-button text disabled="true" style="float: right;" >{{ refund_status }}</el-button>
@@ -96,13 +102,14 @@
             </el-form>
         </el-card>
     </el-drawer>
-    
+    <ShipInfoModal ref="ShipInfoModalRef"></ShipInfoModal>
 </template>
 
 <script setup>
 import { ref,computed } from 'vue'
 import { nextTick } from 'vue'
 import { useDateFormat } from '@vueuse/core'
+import ShipInfoModal from './ShipInfoModal.vue'
 const props = defineProps({
     info: Object
 })
@@ -132,8 +139,18 @@ const dialogVisible = ref(false)
 
 const open = () => {
     dialogVisible.value = true
-    nextTick(() => {
-        console.log(props.info)
+    // nextTick(() => {
+    //     console.log(props.info)
+    // })
+}
+
+const ShipInfoModalRef = ref(null)
+const loading = ref(false)
+
+const openShipInfoModal = (id) => {
+    loading.value = true
+    ShipInfoModalRef.value.open(id).finally(()=>{
+        loading.value = false
     })
 }
 

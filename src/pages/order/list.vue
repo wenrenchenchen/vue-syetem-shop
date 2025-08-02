@@ -99,7 +99,7 @@ const openInfoModal = (row) => {
         if(item.skus_type == 1 && item.goods_skus){
             let s = []
             for (const k in item.goods_skus.skus) {
-                s.push(o.goods_skus.skus[k].value)
+                s.push(item.goods_skus.skus[k].value)
             }
             item.sku = s.join(",")
 

@@ -18,3 +18,7 @@ export function exportOrder( query = {}) {
         responseType:"blob"
     })
 }
+
+export function getShipInfo(id){
+    return axios.get(`/admin/order/${id}/get_ship_info`)
+}
