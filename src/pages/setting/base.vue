@@ -84,7 +84,7 @@
 <script setup>
 import { ref, reactive } from "vue"
 import { getSysconfig, setSysconfig } from "~/api/sysconfig"
-import { toast } from "../../composables/util";
+import { toast } from "~/composables/util";
 
 const activeName = ref("first")
 
