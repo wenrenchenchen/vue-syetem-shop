@@ -49,7 +49,7 @@ const handleRefresh = () => location.reload()
             <el-icon class="logo-00">
                 <Avatar />
             </el-icon>
-            AHC
+            卡皮巴拉
         </span>
         <el-icon class="icon-btn" @click="$store.commit('handleAsideWidth')">
             <fold v-if="$store.state.asideWidth == '250px'" />
