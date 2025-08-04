@@ -68,9 +68,9 @@
         <el-table-column label="未提现金额" prop="no_cash_out_price" align="center"></el-table-column>
 
         <el-table-column fixed="right" label="操作" width="180" align="center">
-          <template #default="scope">
-            <el-button type="primary" size="small" text>推广人</el-button>
-            <el-button type="primary" size="small" text>推广订单</el-button>
+          <template #default="{ row }">
+            <el-button type="primary" size="small" text @click="openDataDrawer(row.id,'user')">推广人</el-button>
+            <el-button type="primary" size="small" text @click="openDataDrawer(row.id,'order')">推广订单</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -87,11 +87,15 @@
         />
       </div>
     </el-card>
+    <dataDrawer ref="dataDrawerRef" type="user" ></dataDrawer>
+    <dataDrawer ref="orderDataDrawerRef" type="order"></dataDrawer>
   </div>
 </template>
 
 <script setup>
+import dataDrawer from "./dataDrawer.vue";
 import panel from "./panel.vue";
+
 import { useInitTable } from "~/composables/useCommon.js";
 import Search from "~/components/Search.vue";
 import SearchItem from "~/components/SearchItem.vue";
@@ -117,12 +121,23 @@ const {
     starttime: null,
     endtime: null
   },
-  getList: getAgentList,
+ getList: getAgentList,
+
   onGetListSuccess: res => {
     tableData.value = res.list;
     total.value = res.totalCount;
   }
 });
+
+const dataDrawerRef = ref(null)
+const orderDataDrawerRef = ref(null)
+const openDataDrawer = (id,type)=>{
+    (type == "user" ? dataDrawerRef : orderDataDrawerRef).value.open(id)
+
+}
+
+
+
 </script>
 <style scoped>
 ::v-deep(.el-radio-button__inner) {
