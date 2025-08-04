@@ -21,7 +21,7 @@
     <el-col  :span="6" :offset="0" v-for="(item,index) in list" :key="index">
       <el-card shadow="never">
         <div class="flex items-center">
-          <el-icon :size="20" :class="item.color" class="text-white w-[40px] h-[40px] rounded-full">
+          <el-icon :size="20" :class="item.color" class="text-white w-[40px] h-[40px] rounded-full ">
             <User v-if="index===0" />
             <ShoppingCart v-if="index===1" />
             <PriceTag v-if="index===2" />
