@@ -72,6 +72,7 @@
 ---
 
 ## 项目布局
+```plaintext
 .vscode -- Visual Studio Code编辑器的配置文件
 ├── extensions.json -- 全局配置对象
 public -- 根目录的静态文件
