@@ -55,18 +55,18 @@
 
 | 插件                     | 说明                                             | 官网 |
 |--------------------------|------------------------------------------------|------|
-| Vite                     | 一个快速的构建工具和开发服务器，版本号 6.3.5          | [官网](https://vitejs.dev/) |
-| @vitejs/plugin-vue       | Vite 插件，用于支持 Vue.js 单文件组件，版本号 5.2.3   | [官网](https://cn.vitejs.dev/plugins/) |
-| vite-plugin-windicss     | WindiCSS 集成插件，版本号 1.9.4                   | [官网](https://www.viterc.cn/en/vite-plugin-windicss.html) |
-| Windicss                 | CSS 框架，版本号 3.5.6                             | [官网](https://cn.windicss.org/) |
-| @vueuse/core             | 集成多个 Vue.js 的实用工具库，版本号 13.2.0          | [官网](https://vueuse.org/core/) |
-| @vueuse/integrations     | 包含多个 Vue.js 集成插件库，版本号 13.1.0            | [官网](https://vueuse.org/integrations/) |
-| @tinymce/tinymce-vue     | TinyMCE 的 Vue 集成版本，版本号 6.2.0               | [官网](https://www.tiny.cloud/) |
-| tinymce                  | 富文本编辑器，版本号 7.9.1                           | [官网](https://www.tiny.cloud/) |
-| nprogress                | 轻量级的进度条库，版本号 0.2.0                       | [官网](https://ricostacruz.com/nprogress/) |
-| universal-cookie         | 处理浏览器 cookie 的JS库，版本号 7.2.2               | [官网](https://www.npmjs.com/package/universal-cookie) |
-| gsap                     | 高性能的JS动画库，版本号 3.13.0                       | [官网](https://greensock.com/gsap/) |
-| echarts                  | 数据可视化的JS图表库，版本号 5.6.0                    | [官网](https://echarts.apache.org/en/index.html) |
+| Vite                     | 一个快速的构建工具和开发服务器，版本号 6.3.5          | [https://vitejs.dev/](https://vitejs.dev/) |
+| @vitejs/plugin-vue       | Vite 插件，用于支持 Vue.js 单文件组件，版本号 5.2.3   | [https://cn.vitejs.dev/plugins/](https://cn.vitejs.dev/plugins/) |
+| vite-plugin-windicss     | WindiCSS 集成插件，版本号 1.9.4                   | [https://www.viterc.cn/en/vite-plugin-windicss.html](https://www.viterc.cn/en/vite-plugin-windicss.html) |
+| Windicss                 | CSS 框架，版本号 3.5.6                             | [https://cn.windicss.org/](https://cn.windicss.org/) |
+| @vueuse/core             | 集成多个 Vue.js 的实用工具库，版本号 13.2.0          | [https://vueuse.org/core/](https://vueuse.org/core/) |
+| @vueuse/integrations     | 包含多个 Vue.js 集成插件库，版本号 13.1.0            | [https://vueuse.org/integrations/](https://vueuse.org/integrations/) |
+| @tinymce/tinymce-vue     | TinyMCE 的 Vue 集成版本，版本号 6.2.0               | [https://www.tiny.cloud/](https://www.tiny.cloud/) |
+| tinymce                  | 富文本编辑器，版本号 7.9.1                           | [https://www.tiny.cloud/](https://www.tiny.cloud/) |
+| nprogress                | 轻量级的进度条库，版本号 0.2.0                       | [https://ricostacruz.com/nprogress/](https://ricostacruz.com/nprogress/) |
+| universal-cookie         | 处理浏览器 cookie 的JS库，版本号 7.2.2               | [https://www.npmjs.com/package/universal-cookie](https://www.npmjs.com/package/universal-cookie) |
+| gsap                     | 高性能的JS动画库，版本号 3.13.0                       | [https://greensock.com/gsap/](https://greensock.com/gsap/) |
+| echarts                  | 数据可视化的JS图表库，版本号 5.6.0                    | [https://echarts.apache.org/en/index.html](https://echarts.apache.org/en/index.html) |
 
 
 ---
