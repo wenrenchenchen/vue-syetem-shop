@@ -26,11 +26,13 @@
 ---
 
 ![项目展示](./public/项目展示.png)
+![项目展示](./public/项目展示2.png)
 
 ## 技术选型
 
 | 技术                  | 说明                                      | 官网 |
 | --------------------- | ----------------------------------------- | ---- |
+| Node.js               | JavaScript 运行时，版本号 22.15.0          | [https://nodejs.org](https://nodejs.org/) |
 | Vue.js                | 前端框架，版本号为 3.2.47                 | [https://v3.vuejs.org/](https://v3.vuejs.org/) |
 | Vue Router            | 路由管理器，版本号为 4.2.1                | [https://router.vuejs.org/](https://router.vuejs.org/) |
 | Vuex                  | 全局状态管理库，版本号为 4.0.2            | [https://vuex.vuejs.org/](https://vuex.vuejs.org/) |
